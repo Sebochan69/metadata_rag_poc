@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "C:\Users\sase\project\rag-metadata-poc\test_phase4.py", line 1, in <module>
+    from src.orchestration.graph import run_extraction
+  File "C:\Users\sase\project\rag-metadata-poc\src\orchestration\graph.py", line 11, in <module>
+    from src.orchestration.nodes import (
+  File "C:\Users\sase\project\rag-metadata-poc\src\orchestration\nodes.py", line 11, in <module>
+    from src.metadata.doc_extractor import get_doc_extractor
+  File "C:\Users\sase\project\rag-metadata-poc\src\metadata\doc_extractor.py", line 11, in <module>
+    from src.metadata.doc_extractor import get_doc_extractor
+ImportError: cannot import name 'get_doc_extractor' from partially initialized module 'src.metadata.doc_extractor' (most likely due to a circular import) (C:\Users\sase\project\rag-metadata-poc\src\metadata\doc_extractor.py)

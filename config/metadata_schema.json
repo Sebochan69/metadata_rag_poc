@@ -1,0 +1,202 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Document Metadata Schema",
+  "description": "Structured metadata for RAG document retrieval",
+  "type": "object",
+  "required": [
+    "document_type",
+    "department",
+    "authority_level",
+    "topics",
+    "intended_audience"
+  ],
+  "properties": {
+    "document_type": {
+      "type": "string",
+      "enum": [
+        "HR Policy",
+        "Technical Manual",
+        "Financial Report",
+        "Legal Document",
+        "Memo",
+        "Procedure",
+        "Guideline",
+        "Standard Operating Procedure",
+        "Other"
+      ],
+      "description": "Primary classification of the document"
+    },
+    "department": {
+      "type": "string",
+      "enum": [
+        "HR",
+        "Engineering",
+        "Finance",
+        "Legal",
+        "Operations",
+        "Marketing",
+        "Sales",
+        "Executive",
+        "IT",
+        "Cross-Functional"
+      ],
+      "description": "Owning department or primary stakeholder"
+    },
+    "authority_level": {
+      "type": "string",
+      "enum": [
+        "official",
+        "draft",
+        "archived",
+        "deprecated",
+        "reference"
+      ],
+      "description": "Document status and authority level"
+    },
+    "topics": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "maxItems": 10,
+      "description": "Key topics covered in the document (hierarchical tags supported)"
+    },
+    "intended_audience": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "all_employees",
+          "managers",
+          "executives",
+          "engineers",
+          "hr_staff",
+          "finance_team",
+          "legal_team",
+          "contractors",
+          "new_hires",
+          "specific_department"
+        ]
+      },
+      "minItems": 1,
+      "description": "Target audience for this document"
+    },
+    "effective_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date when this document becomes/became effective (YYYY-MM-DD)"
+    },
+    "expiration_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date when this document expires (YYYY-MM-DD)"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+(\\.[0-9]+)?$",
+      "description": "Document version (semantic versioning: major.minor.patch)"
+    },
+    "document_summary": {
+      "type": "string",
+      "minLength": 50,
+      "maxLength": 500,
+      "description": "2-3 sentence summary of document content"
+    },
+    "key_entities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 20,
+      "description": "Named entities (people, products, policies) mentioned"
+    },
+    "requires_acknowledgment": {
+      "type": "boolean",
+      "description": "Whether employees must acknowledge reading this document"
+    },
+    "compliance_related": {
+      "type": "boolean",
+      "description": "Whether this document is related to legal/regulatory compliance"
+    },
+    "geographic_scope": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "global",
+          "us",
+          "eu",
+          "apac",
+          "emea",
+          "country_specific"
+        ]
+      },
+      "description": "Geographic applicability of the document"
+    },
+    "classification_confidence": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "LLM confidence score for metadata extraction"
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "chunk_metadata": {
+      "type": "object",
+      "description": "Additional metadata for individual chunks",
+      "properties": {
+        "section_topics": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 5,
+          "description": "Topics specific to this chunk/section"
+        },
+        "section_audience": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Audience specific to this section (may differ from document)"
+        },
+        "action_required": {
+          "type": "boolean",
+          "description": "Whether this section requires user action"
+        },
+        "section_type": {
+          "type": "string",
+          "enum": [
+            "overview",
+            "procedure",
+            "example",
+            "definition",
+            "requirement",
+            "recommendation",
+            "reference"
+          ],
+          "description": "Type of content in this section"
+        },
+        "reference_links": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uri"
+          },
+          "description": "URLs or internal references mentioned in this chunk"
+        },
+        "chunk_number": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Sequential chunk number within the document"
+        },
+        "parent_section": {
+          "type": "string",
+          "description": "Parent section or heading this chunk belongs to"
+        }
+      }
+    }
+  }
+}

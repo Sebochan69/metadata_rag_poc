@@ -1,0 +1,210 @@
+Comprehensive Medical Compendium for Retrieval-Augmented Generation (RAG) Stress Testing
+
+Purpose of This Document
+
+This document is intentionally long, dense, technical, and
+information-rich. It is designed to push a Retrieval-Augmented
+Generation (RAG) system to its limits in terms of: - Chunking strategy -
+Embedding quality - Semantic recall - Long-context reasoning -
+Cross-section reference resolution - Medical terminology understanding
+
+The content below spans multiple domains of medicine, including anatomy,
+physiology, pathology, pharmacology, diagnostics, public health, ethics,
+and emerging research.
+
+------------------------------------------------------------------------
+
+1. Human Anatomy Overview
+
+1.1 Cardiovascular System
+
+The cardiovascular system consists of the heart, blood, and blood
+vessels. Its primary function is to transport oxygen, nutrients,
+hormones, and waste products throughout the body.
+
+Key components: - Heart (atria, ventricles, valves) - Arteries (elastic,
+muscular) - Veins - Capillaries
+
+Clinical relevance: - Hypertension results from increased systemic
+vascular resistance. - Atherosclerosis involves lipid deposition within
+arterial walls. - Myocardial infarction occurs due to ischemia of
+cardiac muscle.
+
+1.2 Nervous System
+
+The nervous system is divided into: - Central Nervous System (CNS):
+brain and spinal cord - Peripheral Nervous System (PNS): cranial and
+spinal nerves
+
+Subdivisions: - Somatic nervous system - Autonomic nervous system
+(sympathetic and parasympathetic)
+
+Diseases: - Parkinson’s disease: dopaminergic neuron degeneration -
+Alzheimer’s disease: amyloid-beta plaques and tau tangles - Multiple
+sclerosis: autoimmune demyelination
+
+------------------------------------------------------------------------
+
+2. Physiology and Homeostasis
+
+2.1 Cellular Metabolism
+
+Cells generate energy primarily through: - Glycolysis - Krebs cycle -
+Oxidative phosphorylation
+
+ATP is the universal energy currency of the cell.
+
+2.2 Endocrine Regulation
+
+Hormones regulate growth, metabolism, and reproduction.
+
+Examples: - Insulin lowers blood glucose by increasing cellular
+uptake. - Glucagon raises blood glucose via glycogenolysis. - Cortisol
+modulates stress response and inflammation.
+
+Disorders: - Diabetes mellitus type 1 and type 2 - Cushing syndrome -
+Addison disease
+
+------------------------------------------------------------------------
+
+3. Pathology
+
+3.1 Inflammation
+
+Inflammation is the body’s response to injury or infection.
+
+Cardinal signs: - Rubor - Calor - Tumor - Dolor - Functio laesa
+
+Chronic inflammation is linked to: - Cancer - Cardiovascular disease -
+Autoimmune disorders
+
+3.2 Neoplasia
+
+Neoplasia refers to abnormal tissue growth.
+
+Benign vs malignant: - Benign tumors are localized - Malignant tumors
+invade and metastasize
+
+Hallmarks of cancer: - Sustained proliferative signaling - Evasion of
+apoptosis - Angiogenesis - Immune evasion
+
+------------------------------------------------------------------------
+
+4. Pharmacology
+
+4.1 Pharmacokinetics
+
+Pharmacokinetics describes how the body handles a drug.
+
+ADME: - Absorption - Distribution - Metabolism - Excretion
+
+4.2 Pharmacodynamics
+
+Pharmacodynamics focuses on drug effects on the body.
+
+Concepts: - Receptor binding - Agonists vs antagonists - Dose-response
+relationships
+
+Drug classes: - Antibiotics (beta-lactams, macrolides) -
+Antihypertensives (ACE inhibitors, ARBs) - Analgesics (NSAIDs, opioids)
+
+------------------------------------------------------------------------
+
+5. Diagnostics and Imaging
+
+5.1 Laboratory Medicine
+
+Common tests: - Complete blood count (CBC) - Basic metabolic panel
+(BMP) - Liver function tests (LFTs)
+
+Interpretation requires clinical correlation.
+
+5.2 Imaging Modalities
+
+-   X-ray
+-   CT scan
+-   MRI
+-   Ultrasound
+-   PET scan
+
+Each modality has strengths and limitations.
+
+------------------------------------------------------------------------
+
+6. Infectious Diseases
+
+6.1 Bacterial Infections
+
+Examples: - Tuberculosis (Mycobacterium tuberculosis) - Streptococcal
+pharyngitis - Sepsis
+
+Antibiotic resistance is a major global concern.
+
+6.2 Viral Infections
+
+Examples: - Influenza - HIV - COVID-19
+
+Vaccination remains the most effective preventive strategy.
+
+------------------------------------------------------------------------
+
+7. Public Health and Epidemiology
+
+7.1 Epidemiological Measures
+
+-   Incidence
+-   Prevalence
+-   Mortality rate
+-   Case fatality rate
+
+7.2 Disease Prevention
+
+Levels: - Primary prevention (vaccination) - Secondary prevention
+(screening) - Tertiary prevention (rehabilitation)
+
+------------------------------------------------------------------------
+
+8. Medical Ethics
+
+Core principles: - Autonomy - Beneficence - Non-maleficence - Justice
+
+Ethical dilemmas: - End-of-life care - Resource allocation - Informed
+consent
+
+------------------------------------------------------------------------
+
+9. Emerging Medical Technologies
+
+9.1 Artificial Intelligence in Medicine
+
+Applications: - Medical imaging analysis - Clinical decision support -
+Predictive analytics
+
+Challenges: - Data bias - Explainability - Regulatory approval
+
+9.2 Genomic Medicine
+
+Technologies: - Whole genome sequencing - CRISPR gene editing
+
+Ethical concerns include privacy and genetic discrimination.
+
+------------------------------------------------------------------------
+
+10. Long-Range Cross-Referencing Section (RAG Stress)
+
+If a question asks: - “Which hormone mentioned in Section 2 affects
+blood glucose?” → Insulin and glucagon - “Which disease in Section 1
+involves dopaminergic neurons?” → Parkinson’s disease - “Which imaging
+modality in Section 5 uses magnetic fields?” → MRI - “Which pharmacology
+concept uses ADME?” → Pharmacokinetics
+
+This section intentionally requires cross-document semantic retrieval.
+
+------------------------------------------------------------------------
+
+End of Document
+
+This document is intentionally verbose and concept-dense. It is suitable
+for: - Chunk size experiments (200–2000 tokens) - Hybrid search (BM25 +
+vector) - Medical-domain embedding evaluation - Hallucination resistance
+testing
