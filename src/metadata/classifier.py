@@ -19,6 +19,7 @@ class ClassificationResult:
     Structured result from document classification.
     
     Attributes:
+        domain: Document domain (Medical, HR, Engineering, etc.)
         complexity: Document complexity level (simple, structured, complex)
         document_type: Document category
         requires_deep_analysis: Whether deep metadata extraction is needed
@@ -29,6 +30,7 @@ class ClassificationResult:
     
     def __init__(
         self,
+        domain: str,  # NEW
         complexity: str,
         document_type: str,
         requires_deep_analysis: bool,
@@ -36,6 +38,7 @@ class ClassificationResult:
         reasoning: str,
         raw_response: dict[str, Any],
     ) -> None:
+        self.domain = domain  # NEW
         self.complexity = complexity
         self.document_type = document_type
         self.requires_deep_analysis = requires_deep_analysis
@@ -46,6 +49,7 @@ class ClassificationResult:
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
+            "domain": self.domain,  # NEW
             "complexity": self.complexity,
             "document_type": self.document_type,
             "requires_deep_analysis": self.requires_deep_analysis,
@@ -55,7 +59,8 @@ class ClassificationResult:
     
     def __repr__(self) -> str:
         return (
-            f"ClassificationResult(type={self.document_type}, "
+            f"ClassificationResult(domain={self.domain}, "  # NEW
+            f"type={self.document_type}, "
             f"complexity={self.complexity}, confidence={self.confidence:.2f})"
         )
 
@@ -185,8 +190,16 @@ class DocumentClassifier:
         Raises:
             ValueError: If response is invalid or missing required fields
         """
+        from config.business_rules import (
+            DOMAINS,
+            is_valid_domain,
+            get_domain_for_document_type,
+            validate_domain_consistency,
+        )
+        
         # Validate required fields
         required_fields = [
+            "domain",
             "complexity",
             "document_type",
             "requires_deep_analysis",
@@ -200,30 +213,55 @@ class DocumentClassifier:
             )
         
         # Extract fields
+        domain = response["domain"]
         complexity = response["complexity"]
         document_type = response["document_type"]
         requires_deep = response["requires_deep_analysis"]
         confidence = response["confidence"]
         reasoning = response.get("reasoning", "No reasoning provided")
         
-        # Validate values
+        # Validate domain
+        if not is_valid_domain(domain):
+            logger.warning(
+                "invalid_domain",
+                received=domain,
+                allowed=DOMAINS,
+            )
+            # Try to infer domain from document_type
+            inferred_domain = get_domain_for_document_type(document_type)
+            if inferred_domain:
+                logger.info("domain_inferred", inferred=inferred_domain)
+                domain = inferred_domain
+            else:
+                # Fallback to General
+                logger.warning("domain_fallback_to_general")
+                domain = "General"
+        
+        # Validate complexity
         if complexity not in COMPLEXITY_LEVELS:
             logger.warning(
                 "invalid_complexity_level",
                 received=complexity,
                 allowed=COMPLEXITY_LEVELS,
             )
-            # Try to recover by defaulting to structured
-            complexity = "structured"
+            complexity = "structured"  # Safe default
         
-        if document_type not in DOCUMENT_TYPES:
+        # Validate domain-document_type consistency
+        consistency_errors = validate_domain_consistency(
+            domain=domain,
+            document_type=document_type,
+            topics=[],  # Topics not available yet
+        )
+        
+        if consistency_errors:
             logger.warning(
-                "invalid_document_type",
-                received=document_type,
-                allowed=DOCUMENT_TYPES,
+                "domain_document_type_mismatch",
+                domain=domain,
+                document_type=document_type,
+                errors=consistency_errors,
             )
-            # Default to "Other" if invalid
-            document_type = "Other"
+            # Lower confidence if inconsistent
+            confidence = min(confidence, 0.7)
         
         # Validate confidence range
         if not (0.0 <= confidence <= 1.0):
@@ -231,10 +269,11 @@ class DocumentClassifier:
                 "confidence_out_of_range",
                 received=confidence,
             )
-            confidence = max(0.0, min(1.0, confidence))  # Clamp to range
+            confidence = max(0.0, min(1.0, confidence))
         
         # Create result
         return ClassificationResult(
+            domain=domain,
             complexity=complexity,
             document_type=document_type,
             requires_deep_analysis=requires_deep,

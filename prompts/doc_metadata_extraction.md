@@ -12,15 +12,20 @@
 
 You are an expert metadata extraction system for a RAG (Retrieval-Augmented Generation) pipeline. Your task is to analyze documents and extract structured metadata that will significantly improve retrieval accuracy.
 
-**Document to Analyze:**
-```
-{document_text}
-```
-
 **Document Classification (already determined):**
 ```json
 {classification_result}
 ```
+
+**Domain:** {domain}
+
+**Allowed Topics for this Domain:**
+```
+{allowed_topics}
+```
+
+**CRITICAL:** You MUST only use topics from the allowed list above. Do not invent new topics.
+
 
 **Extraction Task:**
 Analyze the FULL document and extract comprehensive metadata that will be used for:
@@ -57,6 +62,13 @@ Return ONLY valid JSON with no markdown formatting, code blocks, or explanatory 
 - **Source:** Use the document_type value from the classification result above
 - **DO NOT change** the classification result
 
+### domain
+- **Source:** Use the domain value from the classification result above
+- **DO NOT change** the classification result
+- **Note:** This ensures consistency between classification and metadata
+
+(Keep the rest of the existing fields...)
+
 ### department
 - **Definition:** The owning department or primary stakeholder
 - **How to determine:**
@@ -80,23 +92,25 @@ Return ONLY valid JSON with no markdown formatting, code blocks, or explanatory 
 - **Definition:** Key subjects covered in the document
 - **Requirements:**
   - Minimum 1, maximum 10 topics
-  - Use specific, searchable terms (not generic words)
+  - **CRITICAL:** Topics MUST come from the domain's allowed vocabulary
   - Use lowercase with underscores (e.g., "annual_leave", not "Annual Leave")
   - Prioritize topics by prominence in document
+- **Allowed topics for {domain} domain:**
+```
+  {allowed_topics}
+```
 - **How to extract:**
   1. Read section headers and subheadings
   2. Identify main subjects discussed
-  3. Use domain-specific terminology
-  4. Include both broad and specific topics
-- **Examples:**
-  - HR doc: ["annual_leave", "sick_leave", "remote_work", "benefits"]
-  - Tech doc: ["kubernetes", "deployment", "ci_cd", "monitoring"]
-  - Finance: ["budget", "expenses", "q3_report", "forecasting"]
-- **Prefer specific terms from this taxonomy:**
-  - HR: annual_leave, sick_leave, parental_leave, remote_work, hybrid_work, performance_review, compensation, benefits, equity, stock_options, employee_conduct, onboarding, termination
-  - Engineering: api_documentation, system_architecture, deployment, ci_cd, kubernetes, docker, cloud_infrastructure, database, security, authentication, testing, monitoring
-  - Finance: budget, expenses, revenue, forecasting, quarterly_report, procurement, reimbursement, travel_expenses
-  - Legal: contract, agreement, privacy_policy, data_protection, gdpr, compliance, intellectual_property, liability
+  3. **Only use topics from the allowed list above**
+  4. If a concept isn't in the list, find the closest match or use a broader term
+  5. Do NOT invent new topics - choose from the vocabulary
+- **Examples for Medical domain:**
+  - Document about heart disease → ["cardiovascular_system", "pathology", "disease_mechanisms"]
+  - Document about drug interactions → ["pharmacology", "drug_interactions", "pharmacokinetics"]
+- **Examples for HR domain:**
+  - Document about vacation policy → ["annual_leave", "pto", "time_off"]
+  - Document about remote work → ["remote_work", "work_from_home", "flexible_hours"]
 
 ### intended_audience
 - **Definition:** Who should read/use this document
@@ -289,6 +303,7 @@ All employees must acknowledge receipt and understanding of this policy.
 **Expected Output:**
 ```json
 {{
+  "domain": "HR",
   "document_type": "HR Policy",
   "department": "HR",
   "authority_level": "official",

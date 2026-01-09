@@ -1,5 +1,5 @@
 from src.orchestration.graph import run_extraction
-from src.storage.chroma_manager import get_chroma_manager
+from src.storage.qdrant_manager import get_chroma_manager
 from src.retrieval.retriever import get_retriever
 
 print("=" * 60)

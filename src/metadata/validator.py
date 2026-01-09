@@ -17,6 +17,9 @@ from config.business_rules import (
     INTENDED_AUDIENCES,
     ValidationRules,
     validate_metadata_completeness,
+    is_valid_topic_for_domain,
+    validate_domain_consistency,
+    is_valid_domain,
 )
 from config.settings import settings
 from src.utils.logger import get_logger
@@ -119,6 +122,119 @@ class MetadataValidator:
         
         return metadata
     
+    def validate_early(
+        self,
+        metadata: dict[str, Any],
+    ) -> tuple[dict[str, Any], list[str], list[str]]:
+        """
+        Early validation for metadata (less strict, used during extraction).
+        
+        This runs immediately after extraction to catch critical errors early.
+        Less strict than final validation - focuses on:
+        - Required fields present
+        - Domain consistency
+        - Topic validity
+        
+        Args:
+            metadata: Metadata dictionary to validate
+            
+        Returns:
+            Tuple of (fixed_metadata, errors, warnings)
+            - errors: Critical issues that should fail the pipeline
+            - warnings: Non-critical issues to log
+        """
+        logger.debug("early_validation_started")
+        
+        errors = []
+        warnings = []
+        
+        # Always try to fix minor issues
+        fixed_metadata = self._fix_minor_issues(metadata)
+        
+        # Check required fields
+        required_fields = [
+            "domain",
+            "document_type",
+            "department",
+            "authority_level",
+            "topics",
+            "intended_audience",
+        ]
+        
+        missing_fields = [f for f in required_fields if f not in fixed_metadata]
+        if missing_fields:
+            errors.append(f"Missing required fields: {missing_fields}")
+        
+        # Validate domain (critical)
+        if "domain" in fixed_metadata:
+            from config.business_rules import is_valid_domain
+            
+            if not is_valid_domain(fixed_metadata["domain"]):
+                errors.append(f"Invalid domain: {fixed_metadata['domain']}")
+        
+        # Validate topics against domain (critical)
+        if "domain" in fixed_metadata and "topics" in fixed_metadata:
+            domain = fixed_metadata["domain"]
+            topics = fixed_metadata["topics"]
+            
+            if not topics:
+                errors.append("No topics extracted - at least one topic required")
+            else:
+                from config.business_rules import is_valid_topic_for_domain
+                
+                invalid_topics = [
+                    t for t in topics 
+                    if not is_valid_topic_for_domain(t, domain)
+                ]
+                
+                if invalid_topics:
+                    # This is a warning, not an error - we filtered them already
+                    warnings.append(
+                        f"Some topics were filtered (not in domain vocabulary): {invalid_topics}"
+                    )
+                
+                # But if ALL topics are invalid, that's an error
+                valid_topics = [
+                    t for t in topics 
+                    if is_valid_topic_for_domain(t, domain)
+                ]
+                
+                if not valid_topics:
+                    errors.append(
+                        f"No valid topics for domain '{domain}'. "
+                        f"Topics must be from domain vocabulary."
+                    )
+        
+        # Validate domain-document_type consistency (warning, not error)
+        if "domain" in fixed_metadata and "document_type" in fixed_metadata:
+            from config.business_rules import validate_domain_consistency
+            
+            consistency_errors = validate_domain_consistency(
+                domain=fixed_metadata["domain"],
+                document_type=fixed_metadata["document_type"],
+                topics=fixed_metadata.get("topics", []),
+            )
+            
+            if consistency_errors:
+                warnings.extend(consistency_errors)
+        
+        # Check confidence (warning only)
+        if "classification_confidence" in fixed_metadata:
+            if self.is_low_confidence(fixed_metadata):
+                warnings.append(
+                    f"Low confidence classification "
+                    f"({fixed_metadata['classification_confidence']:.2f}) - "
+                    f"consider manual review"
+                )
+        
+        logger.info(
+            "early_validation_completed",
+            errors=len(errors),
+            warnings=len(warnings),
+        )
+        
+        return fixed_metadata, errors, warnings
+
     def _fix_minor_issues(self, metadata: dict[str, Any]) -> dict[str, Any]:
         """
         Attempt to fix common minor issues.
@@ -196,6 +312,41 @@ class MetadataValidator:
         
         # Use business_rules validation
         errors.extend(validate_metadata_completeness(metadata))
+        
+        # Domain validation
+        if "domain" in metadata:
+            domain = metadata["domain"]
+            
+            # Check domain is valid
+            if not is_valid_domain(domain):
+                errors.append(
+                    f"Invalid domain: {domain}. "
+                    f"Must be one of the allowed domains."
+                )
+            
+            # Validate topics against domain vocabulary
+            if "topics" in metadata:
+                topics = metadata["topics"]
+                invalid_topics = []
+                
+                for topic in topics:
+                    if not is_valid_topic_for_domain(topic, domain):
+                        invalid_topics.append(topic)
+                
+                if invalid_topics:
+                    errors.append(
+                        f"Invalid topics for domain '{domain}': {invalid_topics}. "
+                        f"Topics must be from the domain's vocabulary."
+                    )
+            
+            # Check domain consistency with document_type and topics
+            if "document_type" in metadata and "topics" in metadata:
+                consistency_errors = validate_domain_consistency(
+                    domain=domain,
+                    document_type=metadata["document_type"],
+                    topics=metadata["topics"],
+                )
+                errors.extend(consistency_errors)
         
         # Version format
         if "version" in metadata:

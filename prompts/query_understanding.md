@@ -1,12 +1,12 @@
 # Query Understanding Prompt
 
 ## Metadata
-- **Version**: 1.0.0
+- **Version**: 1.1.0
 - **Model**: gpt-4o
 - **Temperature**: 0.2
 - **Max Tokens**: 300
 - **Purpose**: Extract search intent and metadata filters from user queries
-- **Last Updated**: 2024-12-23
+- **Last Updated**: 2024-01-08
 
 ## Prompt:
 
@@ -14,7 +14,7 @@ You are a query understanding system for a RAG (Retrieval-Augmented Generation) 
 
 **User Query:**
 ```
-{query}
+{{query}}
 ```
 
 **Task:**
@@ -27,12 +27,12 @@ Analyze this query and extract:
 
 **Output Format:**
 Return ONLY valid JSON with no markdown formatting or explanatory text:
-
 ```json
 {{
   "intent": "factual|procedural|comparative|exploratory",
   "query_type": "simple_lookup|multi_part|complex_research",
   "required_filters": {{
+    "domain": ["Medical"],
     "document_type": ["HR Policy", "..."],
     "department": ["HR", "..."],
     "topics": ["annual_leave", "..."],
@@ -85,7 +85,57 @@ Return ONLY valid JSON with no markdown formatting or explanatory text:
 ## Filter Extraction Guidelines
 
 ### required_filters
+
 Extract filters that are **explicitly mentioned** or **strongly implied**:
+
+**domain** - Detect the knowledge domain (MOST IMPORTANT FILTER):
+
+Medical domain indicators:
+- Medical terminology: disease, diagnosis, treatment, symptoms, medication, pathology
+- Healthcare: patient, clinical, medical, healthcare, hospital
+- Body systems: cardiovascular, respiratory, nervous, digestive
+- Examples: "What are hypertension symptoms?", "How is diabetes treated?"
+- Domain: ["Medical"]
+
+HR domain indicators:
+- Employee topics: leave, vacation, PTO, sick leave, benefits, compensation
+- Work arrangements: remote work, hybrid, flexible hours, onboarding
+- Performance: review, evaluation, promotion
+- Examples: "How do I request annual leave?", "What's the remote work policy?"
+- Domain: ["HR"]
+
+Engineering domain indicators:
+- Technical terms: API, deployment, kubernetes, docker, code, repository
+- Infrastructure: cloud, AWS, database, server, CI/CD
+- Development: git, testing, monitoring, logging
+- Examples: "How do I deploy to kubernetes?", "What's the API documentation?"
+- Domain: ["Engineering"]
+
+Finance domain indicators:
+- Financial terms: budget, expenses, revenue, invoice, reimbursement
+- Accounting: quarterly report, financial statement, forecast
+- Examples: "How do I submit an expense report?", "What's our Q3 budget?"
+- Domain: ["Finance"]
+
+Legal domain indicators:
+- Legal terms: contract, agreement, compliance, liability, terms
+- Regulations: GDPR, CCPA, privacy policy
+- Examples: "What's in the service agreement?", "What are our compliance requirements?"
+- Domain: ["Legal"]
+
+Operations domain indicators:
+- Process terms: procedure, workflow, SOP, standard operating procedure
+- Facilities: safety, emergency, logistics, inventory
+- Examples: "What's the safety procedure?", "How do we manage inventory?"
+- Domain: ["Operations"]
+
+General domain:
+- Use when query doesn't clearly fit above categories
+- Ambiguous or multi-domain queries
+- Examples: "What's the approval process?", "Tell me about policies"
+- Domain: ["General"] or omit domain filter
+
+**CRITICAL:** If the query clearly belongs to ONE domain, you MUST include that domain in required_filters. This prevents retrieving irrelevant documents from other domains.
 
 **document_type** - Infer from query context:
 - "policy" → ["HR Policy"]
@@ -111,6 +161,7 @@ Extract filters that are **explicitly mentioned** or **strongly implied**:
 - "new hire", "onboarding" → ["new_hires"]
 
 ### optional_filters
+
 Filters that improve results but aren't required:
 
 **authority_level** - Default to ["official"] unless asking about drafts
@@ -118,6 +169,135 @@ Filters that improve results but aren't required:
 - "current", "latest" → after recent date
 - "2024" → specific year
 - "new" → after last 6 months
+
+## Domain Detection Examples
+
+### Example 1: Clear Medical Query
+
+**Query:** "What are the symptoms of hypertension?"
+
+**Analysis:**
+- Keywords: "symptoms" (medical), "hypertension" (disease name)
+- Domain: Clearly Medical
+- Intent: Factual (asking for specific information)
+
+**Output:**
+```json
+{{
+  "intent": "factual",
+  "query_type": "simple_lookup",
+  "required_filters": {{
+    "domain": ["Medical"]
+  }},
+  "optional_filters": {{}},
+  "reformulated_query": "What are the clinical symptoms and signs of hypertension or high blood pressure?",
+  "expected_answer_type": "definition",
+  "confidence": 0.98
+}}
+```
+
+### Example 2: Clear HR Query
+
+**Query:** "How do I request annual leave?"
+
+**Analysis:**
+- Keywords: "annual leave" (HR benefit)
+- Domain: Clearly HR
+- Intent: Procedural (asking how to do something)
+
+**Output:**
+```json
+{{
+  "intent": "procedural",
+  "query_type": "simple_lookup",
+  "required_filters": {{
+    "domain": ["HR"],
+    "document_type": ["HR Policy", "Procedure"],
+    "topics": ["annual_leave"]
+  }},
+  "optional_filters": {{
+    "audience": ["all_employees"]
+  }},
+  "reformulated_query": "What is the procedure and process for submitting and requesting annual leave or vacation time?",
+  "expected_answer_type": "procedure",
+  "confidence": 0.96
+}}
+```
+
+### Example 3: Clear Engineering Query
+
+**Query:** "How do I deploy to kubernetes?"
+
+**Analysis:**
+- Keywords: "deploy", "kubernetes" (technical infrastructure)
+- Domain: Clearly Engineering
+- Intent: Procedural
+
+**Output:**
+```json
+{{
+  "intent": "procedural",
+  "query_type": "simple_lookup",
+  "required_filters": {{
+    "domain": ["Engineering"],
+    "document_type": ["Technical Manual", "Guideline"],
+    "topics": ["kubernetes", "deployment"]
+  }},
+  "optional_filters": {{}},
+  "reformulated_query": "What is the step-by-step deployment process and procedure for deploying applications to kubernetes clusters?",
+  "expected_answer_type": "procedure",
+  "confidence": 0.95
+}}
+```
+
+### Example 4: Ambiguous Cross-Domain Query
+
+**Query:** "What should I do if I'm sick?"
+
+**Analysis:**
+- Could be Medical (illness advice) OR HR (sick leave policy)
+- Likely HR in workplace context
+- Intent: Procedural
+
+**Output:**
+```json
+{{
+  "intent": "procedural",
+  "query_type": "simple_lookup",
+  "required_filters": {{
+    "domain": ["HR"],
+    "topics": ["sick_leave"]
+  }},
+  "optional_filters": {{}},
+  "reformulated_query": "What is the procedure for taking sick leave and notifying the company when an employee is ill or unable to work?",
+  "expected_answer_type": "procedure",
+  "confidence": 0.85
+}}
+```
+
+### Example 5: Truly Ambiguous Query
+
+**Query:** "What's the approval process?"
+
+**Analysis:**
+- Could be HR (leave approval), Finance (expense approval), or Operations (general approval)
+- No clear domain indicators
+- Intent: Procedural but vague
+
+**Output:**
+```json
+{{
+  "intent": "procedural",
+  "query_type": "simple_lookup",
+  "required_filters": {{}},
+  "optional_filters": {{
+    "document_type": ["Procedure", "Policy"]
+  }},
+  "reformulated_query": "What is the approval process and workflow for requests and submissions?",
+  "expected_answer_type": "procedure",
+  "confidence": 0.70
+}}
+```
 
 ## Query Reformulation
 
@@ -140,144 +320,15 @@ Reformulated: "What is the procedure to request and submit annual leave?"
 Original: "Remote work rules"
 Reformulated: "What are the company policies and guidelines for remote work and work from home arrangements?"
 
-## Examples
-
-### Example 1: Simple Factual
-
-**Input:**
-```
-How many days of annual leave do I get?
-```
-
-**Output:**
-```json
-{{
-  "intent": "factual",
-  "query_type": "simple_lookup",
-  "required_filters": {{
-    "document_type": ["HR Policy"],
-    "department": ["HR"],
-    "topics": ["annual_leave"],
-    "audience": ["all_employees"]
-  }},
-  "optional_filters": {{
-    "authority_level": ["official"]
-  }},
-  "reformulated_query": "What is the annual leave entitlement and vacation days allotment for employees?",
-  "expected_answer_type": "policy_statement",
-  "confidence": 0.98
-}}
-```
-
-### Example 2: Procedural
-
-**Input:**
-```
-How do I submit an expense report?
-```
-
-**Output:**
-```json
-{{
-  "intent": "procedural",
-  "query_type": "simple_lookup",
-  "required_filters": {{
-    "document_type": ["Procedure", "Guideline"],
-    "department": ["Finance"],
-    "topics": ["expenses", "reimbursement"]
-  }},
-  "optional_filters": {{
-    "audience": ["all_employees"]
-  }},
-  "reformulated_query": "What is the step-by-step procedure for submitting and processing employee expense reports?",
-  "expected_answer_type": "procedure",
-  "confidence": 0.95
-}}
-```
-
-### Example 3: Comparative
-
-**Input:**
-```
-What's the difference between sick leave and personal leave?
-```
-
-**Output:**
-```json
-{{
-  "intent": "comparative",
-  "query_type": "multi_part",
-  "required_filters": {{
-    "document_type": ["HR Policy"],
-    "department": ["HR"],
-    "topics": ["sick_leave", "personal_leave", "leave_types"]
-  }},
-  "optional_filters": {{}},
-  "reformulated_query": "What are the differences, eligibility, and usage requirements between sick leave and personal leave policies?",
-  "expected_answer_type": "comparison",
-  "confidence": 0.92
-}}
-```
-
-### Example 4: Complex/Exploratory
-
-**Input:**
-```
-What policies apply to remote workers?
-```
-
-**Output:**
-```json
-{{
-  "intent": "exploratory",
-  "query_type": "complex_research",
-  "required_filters": {{
-    "topics": ["remote_work", "work_from_home"]
-  }},
-  "optional_filters": {{
-    "document_type": ["HR Policy", "Guideline"],
-    "department": ["HR", "IT", "Operations"],
-    "audience": ["all_employees", "managers"]
-  }},
-  "reformulated_query": "What are all company policies, guidelines, and requirements that apply specifically to remote workers and work from home arrangements?",
-  "expected_answer_type": "list",
-  "confidence": 0.88
-}}
-```
-
-## Edge Cases
-
-### Ambiguous Queries
-If the query is too vague:
-- Set confidence < 0.7
-- Use broad optional filters
-- Reformulate to be more general
-
-Example: "Tell me about policies"
-- intent: exploratory
-- No required filters
-- Reformulate: "What are the company policies and guidelines?"
-
-### Multiple Topics
-If query spans multiple unrelated topics:
-- Split into topics list
-- Use query_type: "multi_part"
-- Include all relevant topics in required_filters
-
-### No Clear Department
-If department isn't obvious:
-- Leave department out of required_filters
-- Don't guess - let retrieval be broad
-
 ## Quality Checks
 
 Before finalizing output:
 
-1. **Filters are actionable**: Can they actually filter documents?
-2. **Reformulation adds value**: Is it clearer than original?
-3. **Intent matches query**: Does the intent category fit?
-4. **Confidence is calibrated**: High only when query is clear
-5. **Required vs Optional**: Don't over-constrain with required filters
+- [ ] **Domain detected** - If query has clear domain, it MUST be in required_filters
+- [ ] **Filters are actionable** - Can they actually filter documents?
+- [ ] **Reformulation adds value** - Is it clearer than original?
+- [ ] **Intent matches query** - Does the intent category fit?
+- [ ] **Confidence is calibrated** - High only when query is clear
 
 ## Common Mistakes to Avoid
 
@@ -287,8 +338,11 @@ Before finalizing output:
 ❌ **Don't:** Reformulate into keyword soup
 ✅ **Do:** Keep natural, readable language
 
-❌ **Don't:** Guess department when not mentioned
-✅ **Do:** Leave it out of filters
+❌ **Don't:** Guess domain when not mentioned
+✅ **Do:** Leave domain empty if ambiguous
 
 ❌ **Don't:** Set high confidence for ambiguous queries
 ✅ **Do:** Reflect uncertainty in confidence score
+
+❌ **Don't:** Forget to detect domain for clear medical/HR/technical queries
+✅ **Do:** Always include domain when it's obvious from keywords

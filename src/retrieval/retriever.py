@@ -8,7 +8,7 @@ from typing import Any
 
 from config.settings import settings
 from src.metadata.prompt_loader import get_prompt_loader
-from src.storage.chroma_manager import get_chroma_manager
+from src.storage.qdrant_manager import get_qdrant_manager
 from src.utils.llm_client import get_llm_client
 from src.utils.logger import get_logger
 
@@ -67,7 +67,7 @@ class Retriever:
     """
     
     def __init__(self) -> None:
-        self.chroma = get_chroma_manager()
+        self.qdrant = get_qdrant_manager()
         self.llm_client = get_llm_client()
         self.prompt_loader = get_prompt_loader()
         
@@ -114,8 +114,8 @@ class Retriever:
             intent = "factual"
             filters = None
         
-        # Search ChromaDB
-        results = self.chroma.search(
+        # Search Qdrant
+        results = self.qdrant.search(
             query=reformulated_query,
             n_results=top_k,
             where=filters,
@@ -131,6 +131,75 @@ class Retriever:
             intent=intent,
             results_found=len(chunks),
             filters_used=filters is not None,
+        )
+        
+        return QueryResult(
+            query=query,
+            reformulated_query=reformulated_query,
+            intent=intent,
+            chunks=chunks,
+            filters_used=filters or {},
+        )
+    
+    def retrieve_cross_domain(
+        self,
+        query: str,
+        top_k: int | None = None,
+        use_query_understanding: bool = True,
+    ) -> QueryResult:
+        """
+        Retrieve relevant chunks WITHOUT domain filtering.
+        
+        Use this for queries that might span multiple domains.
+        
+        Args:
+            query: User query
+            top_k: Number of results to return
+            use_query_understanding: Whether to use LLM for query analysis
+            
+        Returns:
+            QueryResult with retrieved chunks (no domain filter applied)
+        """
+        top_k = top_k or settings.top_k_retrieval
+        
+        logger.info(
+            "cross_domain_retrieval_started",
+            query=query,
+            top_k=top_k,
+        )
+        
+        if use_query_understanding:
+            # Get query analysis
+            query_analysis = self._understand_query(query)
+            
+            # Remove domain from required filters to allow cross-domain search
+            if "required_filters" in query_analysis and "domain" in query_analysis["required_filters"]:
+                query_analysis["required_filters"].pop("domain", None)
+                logger.info("domain_filter_removed_for_cross_domain_search")
+            
+            reformulated_query = query_analysis.get("reformulated_query", query)
+            intent = query_analysis.get("intent", "factual")
+            filters = self._build_filters(query_analysis)
+        else:
+            reformulated_query = query
+            intent = "factual"
+            filters = None
+        
+        # Search without domain constraint
+        results = self.qdrant.search(
+            query=reformulated_query,
+            n_results=top_k,
+            where=filters,
+        )
+        
+        # Format results
+        chunks = self._format_results(results)
+        
+        logger.info(
+            "cross_domain_retrieval_completed",
+            original_query=query,
+            reformulated=reformulated_query,
+            results_found=len(chunks),
         )
         
         return QueryResult(
@@ -200,13 +269,13 @@ class Retriever:
     
     def _build_filters(self, query_analysis: dict[str, Any]) -> dict[str, Any] | None:
         """
-        Build ChromaDB where clause from query analysis.
+        Build Qdrant where clause from query analysis.
         
         Args:
             query_analysis: Analysis from query understanding
             
         Returns:
-            ChromaDB where clause or None
+            Qdrant where clause or None
         """
         required_filters = query_analysis.get("required_filters", {})
         
@@ -215,31 +284,38 @@ class Retriever:
         
         where_clauses = []
         
-        # Handle document_type
+        # PRIORITY 1: Domain filter (MOST IMPORTANT)
+        if "domain" in required_filters and required_filters["domain"]:
+            domains = required_filters["domain"]
+            
+            if len(domains) == 1:
+                where_clauses.append({"domain": domains[0]})
+                logger.info("domain_filter_applied", domain=domains[0])
+            else:
+                # Multiple domains - use OR logic
+                where_clauses.append({"domain": {"$in": domains}})
+                logger.info("multi_domain_filter_applied", domains=domains)
+        
+        # PRIORITY 2: Document type
         if "document_type" in required_filters and required_filters["document_type"]:
             doc_types = required_filters["document_type"]
+            
             if len(doc_types) == 1:
                 where_clauses.append({"document_type": doc_types[0]})
             else:
-                # Multiple types - need OR logic (ChromaDB $in operator)
                 where_clauses.append({"document_type": {"$in": doc_types}})
         
-        # Handle department
+        # PRIORITY 3: Department
         if "department" in required_filters and required_filters["department"]:
             depts = required_filters["department"]
+            
             if len(depts) == 1:
                 where_clauses.append({"department": depts[0]})
             else:
                 where_clauses.append({"department": {"$in": depts}})
         
-        # Handle topics 
-        # Note: Topics are stored as comma-separated strings in Chroma
-        # We can't use substring matching, so we'll be less strict with filters
-        # for topics and rely more on vector similarity
-        # Skip topic filtering for now - vector search will handle it
-        
-        # Handle audience - also skip for now
-        # Rely on vector similarity to find relevant content
+        # Topics and audience are handled by vector similarity, not filters
+        # (Too restrictive to filter on these)
         
         # Combine all clauses with AND
         if not where_clauses:
@@ -251,10 +327,10 @@ class Retriever:
     
     def _format_results(self, results: dict[str, Any]) -> list[dict[str, Any]]:
         """
-        Format ChromaDB results into structured chunks.
+        Format Qdrant results into structured chunks.
         
         Args:
-            results: Raw results from ChromaDB
+            results: Raw results from Qdrant
             
         Returns:
             List of formatted chunk dictionaries

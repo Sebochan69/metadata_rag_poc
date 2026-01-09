@@ -4,6 +4,7 @@
   "description": "Structured metadata for RAG document retrieval",
   "type": "object",
   "required": [
+    "domain",
     "document_type",
     "department",
     "authority_level",
@@ -11,6 +12,19 @@
     "intended_audience"
   ],
   "properties": {
+    "domain": {
+      "type": "string",
+      "enum": [
+        "Medical",
+        "HR",
+        "Engineering",
+        "Finance",
+        "Legal",
+        "Operations",
+        "General"
+      ],
+      "description": "Primary knowledge domain of the document"
+    },
     "document_type": {
       "type": "string",
       "enum": [
@@ -22,6 +36,18 @@
         "Procedure",
         "Guideline",
         "Standard Operating Procedure",
+        "Medical Manual",
+        "Clinical Report",
+        "Research Paper",
+        "Clinical Guideline",
+        "Medical Reference",
+        "Employee Handbook",
+        "API Documentation",
+        "System Architecture",
+        "Budget Document",
+        "Contract",
+        "Agreement",
+        "Announcement",
         "Other"
       ],
       "description": "Primary classification of the document"
@@ -38,6 +64,9 @@
         "Sales",
         "Executive",
         "IT",
+        "Medical",
+        "Clinical",
+        "Research",
         "Cross-Functional"
       ],
       "description": "Owning department or primary stakeholder"
@@ -60,7 +89,7 @@
       },
       "minItems": 1,
       "maxItems": 10,
-      "description": "Key topics covered in the document (hierarchical tags supported)"
+      "description": "Key topics covered in the document (must be from domain vocabulary)"
     },
     "intended_audience": {
       "type": "array",
@@ -74,6 +103,9 @@
           "hr_staff",
           "finance_team",
           "legal_team",
+          "medical_staff",
+          "clinical_staff",
+          "researchers",
           "contractors",
           "new_hires",
           "specific_department"
@@ -141,62 +173,5 @@
       "description": "LLM confidence score for metadata extraction"
     }
   },
-  "additionalProperties": false,
-  "definitions": {
-    "chunk_metadata": {
-      "type": "object",
-      "description": "Additional metadata for individual chunks",
-      "properties": {
-        "section_topics": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "maxItems": 5,
-          "description": "Topics specific to this chunk/section"
-        },
-        "section_audience": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "Audience specific to this section (may differ from document)"
-        },
-        "action_required": {
-          "type": "boolean",
-          "description": "Whether this section requires user action"
-        },
-        "section_type": {
-          "type": "string",
-          "enum": [
-            "overview",
-            "procedure",
-            "example",
-            "definition",
-            "requirement",
-            "recommendation",
-            "reference"
-          ],
-          "description": "Type of content in this section"
-        },
-        "reference_links": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "uri"
-          },
-          "description": "URLs or internal references mentioned in this chunk"
-        },
-        "chunk_number": {
-          "type": "integer",
-          "minimum": 0,
-          "description": "Sequential chunk number within the document"
-        },
-        "parent_section": {
-          "type": "string",
-          "description": "Parent section or heading this chunk belongs to"
-        }
-      }
-    }
-  }
+  "additionalProperties": false
 }

@@ -16,7 +16,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from src.generation.answer_generator import get_answer_generator
 from src.retrieval.retriever import get_retriever
-from src.storage.chroma_manager import get_chroma_manager
+from src.storage.qdrant_manager import get_qdrant_manager
 
 
 def display_answer(answer, show_sources: bool = True, show_metadata: bool = False):
@@ -108,7 +108,7 @@ def interactive_mode():
     
     retriever = get_retriever()
     generator = get_answer_generator()
-    chroma = get_chroma_manager()
+    qdrant = get_qdrant_manager()
     
     while True:
         try:
@@ -122,7 +122,7 @@ def interactive_mode():
                 break
             
             if query.lower() == 'stats':
-                stats = chroma.get_collection_stats()
+                stats = qdrant.get_collection_stats()
                 print(f"\n📊 Collection Statistics:")
                 print(f"   Name: {stats['collection_name']}")
                 print(f"   Total chunks: {stats['total_chunks']}")
@@ -221,8 +221,8 @@ Examples:
     
     # Handle special modes
     if args.stats:
-        chroma = get_chroma_manager()
-        stats = chroma.get_collection_stats()
+        qdrant = get_qdrant_manager()
+        stats = qdrant.get_collection_stats()
         print(f"\n{'=' * 60}")
         print("COLLECTION STATISTICS")
         print(f"{'=' * 60}")

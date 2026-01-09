@@ -172,6 +172,18 @@ class PipelineConfig(TypedDict, total=False):
     max_retries: int
     """Maximum retries for failed LLM calls (default: 3)"""
 
+    validation_errors: NotRequired[list[str]]
+    """List of validation errors"""
+    
+    validation_warnings: NotRequired[list[str]]
+    """List of validation warnings"""
+    
+    early_validation_warnings: NotRequired[list[str]]  # NEW
+    """List of warnings from early validation"""
+    
+    is_valid: NotRequired[bool]
+    """Whether metadata passed validation"""
+
 
 # ========================================================================
 # Helper Functions
@@ -258,6 +270,7 @@ def get_state_summary(state: GraphState) -> dict[str, Any]:
     
     if "classification" in state:
         summary["classification"] = {
+            "domain": state["classification"].get("domain"),  # NEW
             "type": state["classification"].get("document_type"),
             "complexity": state["classification"].get("complexity"),
             "confidence": state["classification"].get("confidence"),
@@ -265,6 +278,7 @@ def get_state_summary(state: GraphState) -> dict[str, Any]:
     
     if "doc_metadata" in state:
         summary["metadata_fields"] = len(state["doc_metadata"])
+        summary["domain"] = state["doc_metadata"].get("domain")  # NEW
     
     if "chunks" in state:
         summary["chunk_count"] = len(state["chunks"])

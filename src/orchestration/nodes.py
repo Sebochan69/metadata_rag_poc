@@ -83,10 +83,6 @@ def extract_doc_metadata_node(state: GraphState) -> GraphState:
         logger.info("node_extract_doc_metadata_started")
         
         try:
-            # Debug: print to console
-            print(f"DEBUG: state['classification'] type = {type(state['classification'])}")
-            print(f"DEBUG: state['classification'] = {state['classification']}")
-            
             extractor = get_doc_extractor()
             
             # Reconstruct classification result
@@ -94,8 +90,8 @@ def extract_doc_metadata_node(state: GraphState) -> GraphState:
             
             classification_dict = state["classification"]
             
-            print(f"DEBUG: About to create ClassificationResult...")
             classification = ClassificationResult(
+                domain=classification_dict["domain"],
                 complexity=classification_dict["complexity"],
                 document_type=classification_dict["document_type"],
                 requires_deep_analysis=classification_dict["requires_deep_analysis"],
@@ -104,21 +100,50 @@ def extract_doc_metadata_node(state: GraphState) -> GraphState:
                 raw_response=classification_dict,
             )
             
-            print(f"DEBUG: ClassificationResult created: {classification}")
-            print(f"DEBUG: classification.document_type = {classification.document_type}")
-            
             # Extract metadata
             metadata = extractor.extract(
                 document_text=state["raw_text"],
                 classification=classification,
             )
             
-            state["doc_metadata"] = metadata
+            # NEW: Eager validation
+            from src.metadata.validator import get_validator
+            
+            validator = get_validator()
+            validated_metadata, errors, warnings = validator.validate_early(metadata)
+            
+            # Log warnings
+            if warnings:
+                for warning in warnings:
+                    logger.warning(
+                        "metadata_extraction_warning",
+                        warning=warning,
+                    )
+            
+            # Check for critical errors
+            if errors:
+                logger.error(
+                    "metadata_validation_failed_early",
+                    errors=errors,
+                )
+                return mark_as_failed(
+                    state,
+                    error=f"Metadata validation failed: {errors[0]}",
+                    stage="doc_metadata_extraction",
+                )
+            
+            # Store validated metadata
+            state["doc_metadata"] = validated_metadata
+            
+            # Store validation info for final validation
+            state["early_validation_warnings"] = warnings
             
             logger.info(
                 "node_extract_doc_metadata_completed",
-                metadata_fields=len(metadata),
-                topics=metadata.get("topics", []),
+                domain=validated_metadata.get("domain"),
+                metadata_fields=len(validated_metadata),
+                topics=validated_metadata.get("topics", []),
+                warnings=len(warnings),
             )
             
             state["status"] = "chunking"
@@ -131,13 +156,12 @@ def extract_doc_metadata_node(state: GraphState) -> GraphState:
                 error_type=type(e).__name__,
             )
             import traceback
-            print(f"DEBUG TRACEBACK:\n{traceback.format_exc()}")
+            logger.error("traceback", trace=traceback.format_exc())
             return mark_as_failed(
                 state,
                 error=f"Document metadata extraction failed: {str(e)}",
                 stage="doc_metadata_extraction",
             )
-
 
 # ============================================================================
 # Node: Chunk Document

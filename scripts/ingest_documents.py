@@ -16,7 +16,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from src.ingestion.pdf_loader import load_document
 from src.orchestration.graph import run_extraction
-from src.storage.chroma_manager import get_chroma_manager
+from src.storage.qdrant_manager import get_qdrant_manager
 from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -75,10 +75,10 @@ def ingest_single_file(
         
         # 3. Store in vector database
         print("\n[3/3] Storing in vector database...")
-        chroma = get_chroma_manager()
-        chroma.add_chunks(result['chunks'], document_id)
+        qdrant = get_qdrant_manager()
+        qdrant.add_chunks(result['chunks'], document_id)
         
-        stats = chroma.get_collection_stats()
+        stats = qdrant.get_collection_stats()
         print(f"✅ Stored successfully")
         print(f"   Total chunks in DB: {stats['total_chunks']}")
         

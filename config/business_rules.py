@@ -6,6 +6,386 @@ Defines allowed values for metadata fields to ensure consistency.
 from typing import Final
 
 # ============================================================================
+# Domains (NEW - Phase A)
+# ============================================================================
+
+DOMAINS: Final[list[str]] = [
+    "Medical",
+    "HR",
+    "Engineering",
+    "Finance",
+    "Legal",
+    "Operations",
+    "General",  # Fallback for ambiguous documents
+]
+
+# Domain-specific vocabularies
+# Each domain has allowed document types and topics
+DOMAIN_VOCABULARIES: Final[dict[str, dict[str, list[str]]]] = {
+    "Medical": {
+        "document_types": [
+            "Medical Manual",
+            "Clinical Report",
+            "Research Paper",
+            "Clinical Guideline",
+            "Medical Reference",
+        ],
+        "topics": [
+            # Anatomy
+            "anatomy", "cardiovascular_system", "nervous_system", "respiratory_system",
+            "digestive_system", "musculoskeletal_system",
+            
+            # Physiology
+            "physiology", "homeostasis", "cellular_metabolism", "endocrine_regulation",
+            
+            # Pathology
+            "pathology", "inflammation", "neoplasia", "cancer", "disease_mechanisms",
+            
+            # Pharmacology
+            "pharmacology", "pharmacokinetics", "pharmacodynamics", "drug_interactions",
+            "antibiotics", "antihypertensives", "analgesics",
+            
+            # Diagnostics
+            "diagnostics", "laboratory_medicine", "medical_imaging", "x-ray", "ct_scan",
+            "mri", "ultrasound", "pet_scan",
+            
+            # Diseases
+            "infectious_diseases", "bacterial_infections", "viral_infections",
+            "tuberculosis", "influenza", "hiv", "covid-19",
+            
+            # Public Health
+            "public_health", "epidemiology", "disease_prevention", "vaccination",
+            
+            # Medical Ethics
+            "medical_ethics", "bioethics", "patient_care", "informed_consent",
+            
+            # Emerging Tech
+            "medical_ai", "genomic_medicine", "precision_medicine",
+        ],
+    },
+    
+    "HR": {
+        "document_types": [
+            "HR Policy",
+            "Employee Handbook",
+            "Guideline",
+            "Memo",
+        ],
+        "topics": [
+            # Leave & Time Off
+            "annual_leave", "sick_leave", "parental_leave", "bereavement_leave",
+            "unpaid_leave", "vacation_policy", "pto",
+            
+            # Work Arrangements
+            "remote_work", "hybrid_work", "flexible_hours", "work_from_home",
+            
+            # Performance & Development
+            "performance_review", "performance_evaluation", "career_development",
+            "training", "professional_development",
+            
+            # Compensation & Benefits
+            "compensation", "salary", "benefits", "health_insurance",
+            "equity", "stock_options", "vesting", "401k", "retirement",
+            
+            # Conduct & Compliance
+            "employee_conduct", "code_of_conduct", "harassment_policy",
+            "diversity_inclusion", "workplace_safety",
+            
+            # Lifecycle
+            "onboarding", "offboarding", "termination", "resignation",
+            "probationary_period",
+        ],
+    },
+    
+    "Engineering": {
+        "document_types": [
+            "Technical Manual",
+            "API Documentation",
+            "System Architecture",
+            "Standard Operating Procedure",
+        ],
+        "topics": [
+            # Software Development
+            "api_documentation", "system_architecture", "software_design",
+            "coding_standards", "code_review", "git_workflow",
+            
+            # Infrastructure & DevOps
+            "deployment", "ci_cd", "kubernetes", "docker", "containerization",
+            "cloud_infrastructure", "aws", "azure", "gcp",
+            
+            # Data & Databases
+            "database", "sql", "nosql", "data_modeling", "data_pipeline",
+            
+            # Security
+            "security", "authentication", "authorization", "encryption",
+            "vulnerability_management",
+            
+            # Operations
+            "monitoring", "logging", "observability", "incident_response",
+            "disaster_recovery", "performance_optimization",
+            
+            # Testing
+            "testing", "unit_testing", "integration_testing", "test_automation",
+        ],
+    },
+    
+    "Finance": {
+        "document_types": [
+            "Financial Report",
+            "Budget Document",
+            "Procedure",
+        ],
+        "topics": [
+            # Financial Planning
+            "budget", "budgeting", "financial_planning", "forecasting",
+            "cost_analysis",
+            
+            # Accounting
+            "expenses", "revenue", "profit_loss", "balance_sheet",
+            "cash_flow", "accounts_payable", "accounts_receivable",
+            
+            # Reporting
+            "quarterly_report", "annual_report", "financial_statements",
+            "audit", "compliance_reporting",
+            
+            # Operations
+            "procurement", "vendor_management", "invoicing",
+            "reimbursement", "travel_expenses", "expense_reports",
+        ],
+    },
+    
+    "Legal": {
+        "document_types": [
+            "Legal Document",
+            "Contract",
+            "Agreement",
+        ],
+        "topics": [
+            # Contracts
+            "contract", "agreement", "terms_of_service", "service_agreement",
+            "nda", "non_disclosure",
+            
+            # Privacy & Data
+            "privacy_policy", "data_protection", "gdpr", "ccpa",
+            "data_privacy", "personal_data",
+            
+            # Intellectual Property
+            "intellectual_property", "trademark", "copyright", "patent",
+            "licensing",
+            
+            # Liability & Risk
+            "liability", "indemnification", "insurance", "risk_management",
+            
+            # Compliance
+            "compliance", "regulatory_compliance", "legal_compliance",
+            "corporate_governance",
+        ],
+    },
+    
+    "Operations": {
+        "document_types": [
+            "Standard Operating Procedure",
+            "Procedure",
+            "Guideline",
+        ],
+        "topics": [
+            # Process Management
+            "standard_operating_procedure", "sop", "process_documentation",
+            "workflow", "quality_assurance", "quality_control",
+            
+            # Supply Chain
+            "supply_chain", "inventory", "logistics", "warehousing",
+            "procurement",
+            
+            # Facilities
+            "facilities", "office_management", "safety", "emergency_procedures",
+            "security_procedures",
+        ],
+    },
+    
+    "General": {
+        "document_types": [
+            "Memo",
+            "Announcement",
+            "Other",
+        ],
+        "topics": [
+            "general", "announcement", "communication", "update",
+            "company_news", "miscellaneous",
+        ],
+    },
+}
+
+# ============================================================================
+# Domain Helper Functions (NEW - Phase A)
+# ============================================================================
+
+def is_valid_domain(domain: str) -> bool:
+    """Check if domain is in allowed list"""
+    return domain in DOMAINS
+
+
+def get_domain_for_document_type(doc_type: str) -> str | None:
+    """
+    Infer domain from document type.
+    
+    Args:
+        doc_type: Document type string
+        
+    Returns:
+        Domain name or None if not found
+        
+    Example:
+        >>> get_domain_for_document_type("Medical Manual")
+        "Medical"
+    """
+    for domain, vocab in DOMAIN_VOCABULARIES.items():
+        if doc_type in vocab["document_types"]:
+            return domain
+    return None
+
+
+def get_allowed_topics_for_domain(domain: str) -> list[str]:
+    """
+    Get list of allowed topics for a domain.
+    
+    Args:
+        domain: Domain name
+        
+    Returns:
+        List of allowed topic strings
+        
+    Example:
+        >>> topics = get_allowed_topics_for_domain("Medical")
+        >>> "anatomy" in topics
+        True
+    """
+    return DOMAIN_VOCABULARIES.get(domain, {}).get("topics", [])
+
+
+def get_allowed_document_types_for_domain(domain: str) -> list[str]:
+    """
+    Get list of allowed document types for a domain.
+    
+    Args:
+        domain: Domain name
+        
+    Returns:
+        List of allowed document type strings
+    """
+    return DOMAIN_VOCABULARIES.get(domain, {}).get("document_types", [])
+
+
+def is_valid_topic_for_domain(topic: str, domain: str) -> bool:
+    """
+    Check if a topic is valid for a given domain.
+    
+    Args:
+        topic: Topic string
+        domain: Domain name
+        
+    Returns:
+        True if topic is in domain's vocabulary
+        
+    Example:
+        >>> is_valid_topic_for_domain("anatomy", "Medical")
+        True
+        >>> is_valid_topic_for_domain("annual_leave", "Medical")
+        False
+    """
+    allowed = get_allowed_topics_for_domain(domain)
+    return topic.lower() in [t.lower() for t in allowed]
+
+
+def suggest_domain_from_topics(topics: list[str]) -> str:
+    """
+    Suggest domain based on topic overlap.
+    
+    Args:
+        topics: List of topics
+        
+    Returns:
+        Most likely domain based on topic matches
+        
+    Note:
+        This is a fallback heuristic. Prefer LLM classification.
+    """
+    if not topics:
+        return "General"
+    
+    # Count matches per domain
+    domain_scores = {}
+    for domain, vocab in DOMAIN_VOCABULARIES.items():
+        allowed_topics = vocab["topics"]
+        matches = sum(1 for t in topics if t.lower() in [a.lower() for a in allowed_topics])
+        domain_scores[domain] = matches
+    
+    # Return domain with most matches
+    best_domain = max(domain_scores.items(), key=lambda x: x[1])[0]
+    
+    # If no matches, return General
+    if domain_scores[best_domain] == 0:
+        return "General"
+    
+    return best_domain
+
+
+def validate_domain_consistency(
+    domain: str,
+    document_type: str,
+    topics: list[str],
+) -> list[str]:
+    """
+    Validate that domain, document_type, and topics are consistent.
+    
+    Args:
+        domain: Domain string
+        document_type: Document type string
+        topics: List of topics
+        
+    Returns:
+        List of validation error messages (empty if valid)
+        
+    Example:
+        >>> errors = validate_domain_consistency(
+        ...     "Medical",
+        ...     "HR Policy",  # Wrong!
+        ...     ["anatomy"]
+        ... )
+        >>> len(errors) > 0
+        True
+    """
+    errors = []
+    
+    # Check domain is valid
+    if not is_valid_domain(domain):
+        errors.append(
+            f"Invalid domain: {domain}. "
+            f"Must be one of: {', '.join(DOMAINS)}"
+        )
+        return errors  # Can't proceed with invalid domain
+    
+    # Check document_type matches domain
+    allowed_types = get_allowed_document_types_for_domain(domain)
+    if document_type not in allowed_types:
+        errors.append(
+            f"Document type '{document_type}' is not valid for domain '{domain}'. "
+            f"Allowed types: {', '.join(allowed_types)}"
+        )
+    
+    # Check topics match domain
+    allowed_topics = get_allowed_topics_for_domain(domain)
+    invalid_topics = [t for t in topics if t.lower() not in [a.lower() for a in allowed_topics]]
+    
+    if invalid_topics:
+        errors.append(
+            f"Topics {invalid_topics} are not valid for domain '{domain}'. "
+            f"Use topics from the {domain} vocabulary."
+        )
+    
+    return errors
+
+# ============================================================================
 # Document Types
 # ============================================================================
 
@@ -404,6 +784,7 @@ def validate_metadata_completeness(metadata: dict) -> list[str]:
 # ============================================================================
 
 __all__ = [
+    # Existing exports
     "DOCUMENT_TYPES",
     "DEPARTMENTS",
     "AUTHORITY_LEVELS",
@@ -423,4 +804,15 @@ __all__ = [
     "get_related_topics",
     "suggest_topics",
     "validate_metadata_completeness",
+    
+    # NEW - Phase A: Domain functions
+    "DOMAINS",
+    "DOMAIN_VOCABULARIES",
+    "is_valid_domain",
+    "get_domain_for_document_type",
+    "get_allowed_topics_for_domain",
+    "get_allowed_document_types_for_domain",
+    "is_valid_topic_for_domain",
+    "suggest_domain_from_topics",
+    "validate_domain_consistency",
 ]
