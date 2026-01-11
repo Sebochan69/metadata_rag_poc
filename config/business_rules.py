@@ -16,12 +16,33 @@ DOMAINS: Final[list[str]] = [
     "Finance",
     "Legal",
     "Operations",
+    "Sales",
+    "Marketing",
     "General",  # Fallback for ambiguous documents
 ]
 
 # Domain-specific vocabularies
 # Each domain has allowed document types and topics
 DOMAIN_VOCABULARIES: Final[dict[str, dict[str, list[str]]]] = {
+
+    "Sales": {
+        "document_types": ["Sales Manual", "Playbook", "Guideline"],
+        "topics": [
+            "prospecting", "cold_calling", "lead_generation",
+            "sales_pipeline", "crm", "salesforce", "quota",
+            "deal_closing", "negotiation", "pricing",
+        ],
+    },
+
+    "Marketing": {
+        "document_types": ["Marketing Plan", "Campaign Brief", "Guideline"],
+        "topics": [
+            "brand", "campaign", "content_marketing", "seo",
+            "social_media", "email_marketing", "analytics",
+            "lead_generation", "conversion", "roi",
+        ],
+    },
+
     "Medical": {
         "document_types": [
             "Medical Manual",

@@ -1,3 +1,4 @@
+
 """
 Document retrieval with metadata filtering.
 Combines vector similarity search with structured metadata filters.
@@ -11,6 +12,7 @@ from src.metadata.prompt_loader import get_prompt_loader
 from src.storage.qdrant_manager import get_qdrant_manager
 from src.utils.llm_client import get_llm_client
 from src.utils.logger import get_logger
+from qdrant_client.models import Filter, FieldCondition, MatchValue, MatchAny
 
 logger = get_logger(__name__)
 
@@ -72,6 +74,58 @@ class Retriever:
         self.prompt_loader = get_prompt_loader()
         
         logger.info("retriever_initialized")
+
+    def _detect_domain_fallback(self, query: str) -> str | None:
+        """
+        Fallback domain detection using keyword matching.
+        
+        Args:
+            query: User query
+            
+        Returns:
+            Domain name or None
+        """
+        query_lower = query.lower()
+        
+        # Medical keywords
+        medical_keywords = [
+            'disease', 'symptom', 'diagnosis', 'treatment', 'hormone', 
+            'glucose', 'blood', 'patient', 'clinical', 'medical', 'infection',
+            'pathology', 'anatomy', 'cardiovascular', 'dopaminergic', 'imaging',
+            'pharmacology', 'adme', 'inflammation', 'parkinson', 'insulin'
+        ]
+        
+        # HR keywords
+        hr_keywords = [
+            'employee', 'leave', 'vacation', 'pto', 'benefits', 'sick leave',
+            'remote work', 'policy', 'onboarding', 'manager', 'annual leave'
+        ]
+        
+        # Engineering keywords
+        eng_keywords = [
+            'deploy', 'kubernetes', 'api', 'code', 'docker', 'infrastructure',
+            'technical', 'software', 'ci/cd', 'deployment'
+        ]
+        
+        # Count matches
+        medical_score = sum(1 for kw in medical_keywords if kw in query_lower)
+        hr_score = sum(1 for kw in hr_keywords if kw in query_lower)
+        eng_score = sum(1 for kw in eng_keywords if kw in query_lower)
+        
+        # Return domain with highest score
+        scores = {
+            'Medical': medical_score,
+            'HR': hr_score,
+            'Engineering': eng_score,
+        }
+        
+        max_domain = max(scores.items(), key=lambda x: x[1])
+        
+        if max_domain[1] > 0:  # At least one keyword matched
+            logger.info("fallback_domain_detection", domain=max_domain[0], score=max_domain[1])
+            return max_domain[0]
+        
+        return None
     
     def retrieve(
         self,
@@ -100,9 +154,32 @@ class Retriever:
         )
         
         if use_query_understanding:
-            # Use LLM to understand query and extract filters
+            # Understand query
             query_analysis = self._understand_query(query)
             
+            reformulated_query = query_analysis.get("reformulated_query", query)
+            intent = query_analysis.get("intent", "factual")
+            filters = self._build_filters(query_analysis)
+            
+            # 🆕 NEW: Enhance medical queries with dictionary
+            detected_domain = query_analysis.get("required_filters", {}).get("domain", [])
+            if detected_domain and detected_domain[0] == "Medical":
+                try:
+                    from src.retrieval.query_enhancer import get_query_enhancer
+                    
+                    enhancer = get_query_enhancer()
+                    enhancement = enhancer.enhance_medical_query(query, "Medical")
+                    
+                    # Use enhanced query if available
+                    if enhancement["enhanced"]:
+                        reformulated_query = enhancement["enhanced_query"]
+                        logger.info(
+                            "using_enhanced_query",
+                            terms_defined=len(enhancement["definitions"])
+                        )
+                except Exception as e:
+                    logger.warning("query_enhancement_failed", error=str(e))
+
             reformulated_query = query_analysis.get(
                 "reformulated_query", query
             )
@@ -189,7 +266,14 @@ class Retriever:
         results = self.qdrant.search(
             query=reformulated_query,
             n_results=top_k,
-            where=filters,
+            where=filters,  # ← This is wrong
+        )
+
+        # NEW:
+        results = self.qdrant.search(
+            query=reformulated_query,
+            n_results=top_k,
+            where=filters,  # Now filters is a Filter object
         )
         
         # Format results
@@ -227,6 +311,12 @@ class Retriever:
             "query_understanding",
             query=query,
         )
+
+         # 🆕 ADD THIS DEBUG LOG
+        logger.info("PROMPT_DEBUG", prompt_preview=prompt[:500], query=query)
+        print(f"\n🔍 PROMPT PREVIEW (first 500 chars):\n{prompt[:500]}\n")
+        print(f"🔍 ACTUAL QUERY BEING SENT: {query}\n")
+    
         
         # Get analysis from LLM
         try:
@@ -236,6 +326,22 @@ class Retriever:
                 max_tokens=300,
             )
             
+            # 🆕 FALLBACK: If LLM detected wrong domain, use keyword matching
+            llm_domain = analysis.get("required_filters", {}).get("domain", [])
+            fallback_domain = self._detect_domain_fallback(query)
+            
+            if fallback_domain and (not llm_domain or llm_domain[0] != fallback_domain):
+                logger.warning(
+                    "domain_mismatch_using_fallback",
+                    llm_domain=llm_domain,
+                    fallback_domain=fallback_domain,
+                    query=query
+                )
+                # Override with fallback
+                if "required_filters" not in analysis:
+                    analysis["required_filters"] = {}
+                analysis["required_filters"]["domain"] = [fallback_domain]
+
             logger.debug(
                 "query_understood",
                 intent=analysis.get("intent"),
@@ -267,64 +373,92 @@ class Retriever:
                 "confidence": 0.5,
             }
     
-    def _build_filters(self, query_analysis: dict[str, Any]) -> dict[str, Any] | None:
+    def _build_filters(self, query_analysis: dict[str, Any]) -> Filter | None:
         """
-        Build Qdrant where clause from query analysis.
+        Build Qdrant filter from query analysis.
         
         Args:
             query_analysis: Analysis from query understanding
             
         Returns:
-            Qdrant where clause or None
+            Qdrant Filter object or None
         """
+        from qdrant_client.models import Filter, FieldCondition, MatchValue, MatchAny
+        
         required_filters = query_analysis.get("required_filters", {})
         
         if not required_filters:
             return None
         
-        where_clauses = []
+        conditions = []
         
         # PRIORITY 1: Domain filter (MOST IMPORTANT)
         if "domain" in required_filters and required_filters["domain"]:
             domains = required_filters["domain"]
             
+            logger.info("building_domain_filter", domains=domains)
+            
             if len(domains) == 1:
-                where_clauses.append({"domain": domains[0]})
-                logger.info("domain_filter_applied", domain=domains[0])
+                # Single domain
+                conditions.append(
+                    FieldCondition(
+                        key="domain",
+                        match=MatchValue(value=domains[0])
+                    )
+                )
             else:
-                # Multiple domains - use OR logic
-                where_clauses.append({"domain": {"$in": domains}})
-                logger.info("multi_domain_filter_applied", domains=domains)
+                # Multiple domains - use MatchAny
+                conditions.append(
+                    FieldCondition(
+                        key="domain",
+                        match=MatchAny(any=domains)
+                    )
+                )
         
-        # PRIORITY 2: Document type
+        # PRIORITY 2: Document type (if specified)
         if "document_type" in required_filters and required_filters["document_type"]:
             doc_types = required_filters["document_type"]
             
             if len(doc_types) == 1:
-                where_clauses.append({"document_type": doc_types[0]})
+                conditions.append(
+                    FieldCondition(
+                        key="document_type",
+                        match=MatchValue(value=doc_types[0])
+                    )
+                )
             else:
-                where_clauses.append({"document_type": {"$in": doc_types}})
+                conditions.append(
+                    FieldCondition(
+                        key="document_type",
+                        match=MatchAny(any=doc_types)
+                    )
+                )
         
-        # PRIORITY 3: Department
+        # PRIORITY 3: Department (if specified)
         if "department" in required_filters and required_filters["department"]:
             depts = required_filters["department"]
             
             if len(depts) == 1:
-                where_clauses.append({"department": depts[0]})
+                conditions.append(
+                    FieldCondition(
+                        key="department",
+                        match=MatchValue(value=depts[0])
+                    )
+                )
             else:
-                where_clauses.append({"department": {"$in": depts}})
+                conditions.append(
+                    FieldCondition(
+                        key="department",
+                        match=MatchAny(any=depts)
+                    )
+                )
         
-        # Topics and audience are handled by vector similarity, not filters
-        # (Too restrictive to filter on these)
-        
-        # Combine all clauses with AND
-        if not where_clauses:
-            return None
-        elif len(where_clauses) == 1:
-            return where_clauses[0]
+        # Return Filter object (not dict!)
+        if conditions:
+            return Filter(must=conditions)
         else:
-            return {"$and": where_clauses}
-    
+            return None
+        
     def _format_results(self, results: dict[str, Any]) -> list[dict[str, Any]]:
         """
         Format Qdrant results into structured chunks.
@@ -374,6 +508,7 @@ class Retriever:
             chunks.append(chunk)
         
         return chunks
+    
 
 
 # Global retriever instance

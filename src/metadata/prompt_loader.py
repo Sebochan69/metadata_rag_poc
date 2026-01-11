@@ -125,6 +125,11 @@ class PromptLoader:
             ...     document_preview="This is a memo..."
             ... )
         """
+
+        # 🆕 FORCE RELOAD (no cache)
+        if prompt_name in self._cache:
+         del self._cache[prompt_name]
+         
         data = self.load(prompt_name)
         prompt_template = data["prompt"]
         

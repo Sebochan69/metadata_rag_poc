@@ -24,6 +24,18 @@ class Settings(BaseSettings):
     # OpenAI Configuration
     # ============================================================================
     openai_api_key: str = Field(..., description="OpenAI API key")
+
+    # ============================================================================
+    # Merriam-Webster Configuration (NEW)
+    # ============================================================================
+    merriam_webster_medical_key: str = Field(
+        default="",
+        description="Merriam-Webster Medical Dictionary API key"
+    )
+    merriam_webster_dict_key: str = Field(
+        default="",
+        description="Merriam-Webster Collegiate Dictionary API key"
+    )
     
     # Model selection
     openai_model_classification: str = Field(
@@ -79,12 +91,12 @@ class Settings(BaseSettings):
     # Chunking Configuration
     # ============================================================================
     chunk_size: int = Field(
-        default=500,
+        default=300,
         gt=0,
         description="Target chunk size in tokens"
     )
     chunk_overlap: int = Field(
-        default=50,
+        default=75,
         ge=0,
         description="Overlap between chunks in tokens"
     )

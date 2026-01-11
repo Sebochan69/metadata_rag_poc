@@ -71,10 +71,10 @@ for i, test in enumerate(stress_test_queries, 1):
     print(f"Source: {section}")
     
     # Retrieve
-    retrieval_result = retriever.retrieve(query, top_k=5)
+    retrieval_result = retriever.retrieve(query, top_k=10)
     
     print(f"\nRetrieval:")
-    print(f"  Domain filter: {retrieval_result.filters_used.get('domain', 'None')}")
+    # print(f"  Domain filter: {retrieval_result.filters_used.get('domain', 'None')}")
     print(f"  Results found: {retrieval_result.total_results}")
     
     if retrieval_result.chunks:
