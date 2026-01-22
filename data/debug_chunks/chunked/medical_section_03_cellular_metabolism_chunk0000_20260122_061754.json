@@ -1,0 +1,52 @@
+{
+  "chunk_id": "afba9fc3-61e4-49d8-aa0a-e4a469e92218",
+  "document_id": "medical_section_03_cellular_metabolism",
+  "document_name": "03_cellular_metabolism.txt",
+  "source_type": "txt",
+  "chunk_index": 0,
+  "chunk_strategy": "simple_fixed",
+  "text": "2.1 Cellular Metabolism\n\nCells generate energy primarily through: - Glycolysis - Krebs cycle -\nOxidative phosphorylation\n\nATP is the universal energy currency of the cell.",
+  "text_length": 171,
+  "word_count": 25,
+  "metadata": {
+    "document_type": "Scientific Article",
+    "department": "Cross-Functional",
+    "authority_level": "official",
+    "topics": [
+      "cellular_metabolism",
+      "physiology"
+    ],
+    "intended_audience": [
+      "researchers",
+      "medical_professionals",
+      "students"
+    ],
+    "effective_date": "2023-10-01",
+    "expiration_date": "2028-10-01",
+    "version": "1.0.0",
+    "document_summary": "This scientific article explores the mechanisms of cellular metabolism, focusing on the biochemical pathways and their regulation. It aims to provide insights for researchers and medical professionals interested in understanding metabolic processes.",
+    "key_entities": [
+      "ATP",
+      "mitochondria",
+      "enzymes"
+    ],
+    "requires_acknowledgment": false,
+    "compliance_related": false,
+    "geographic_scope": [
+      "global"
+    ],
+    "classification_confidence": 0.7,
+    "domain": "Medical",
+    "complexity": "simple",
+    "requires_deep_analysis": false
+  },
+  "chunk_metadata": {},
+  "start_char": 0,
+  "end_char": 171,
+  "chunk_config": {
+    "chunk_size": 500,
+    "overlap": 100
+  },
+  "embedding_status": "pending",
+  "created_at": "2026-01-22T06:17:54.036322"
+}

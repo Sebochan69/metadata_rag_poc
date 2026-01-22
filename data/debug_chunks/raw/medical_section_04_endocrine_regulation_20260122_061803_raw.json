@@ -1,0 +1,42 @@
+{
+  "document_id": "medical_section_04_endocrine_regulation",
+  "document_name": "04_endocrine_regulation.txt",
+  "text_length": 422,
+  "word_count": 49,
+  "text": "2.2 Endocrine Regulation\n\nHormones regulate growth, metabolism, and reproduction.\n\nExamples: - Insulin lowers blood glucose by increasing cellular\nuptake. - Glucagon raises blood glucose via glycogenolysis. - Cortisol\nmodulates stress response and inflammation.\n\nDisorders: - Diabetes mellitus type 1 and type 2 - Cushing syndrome -\nAddison disease\n\n------------------------------------------------------------------------",
+  "metadata": {
+    "document_type": "Research Article",
+    "department": "Cross-Functional",
+    "authority_level": "official",
+    "topics": [
+      "endocrine_regulation",
+      "pathology",
+      "disease_mechanisms",
+      "physiology"
+    ],
+    "intended_audience": [
+      "medical_researchers",
+      "clinicians",
+      "endocrinologists"
+    ],
+    "effective_date": "2023-09-15",
+    "expiration_date": "2028-09-15",
+    "version": "1.0.0",
+    "document_summary": "This research article explores the mechanisms of hormone regulation and its impact on related disorders. It provides insights into the physiological processes and pathological conditions associated with endocrine regulation, aiming to enhance understanding among medical professionals.",
+    "key_entities": [
+      "hormone regulation",
+      "endocrine disorders",
+      "physiological processes"
+    ],
+    "requires_acknowledgment": false,
+    "compliance_related": false,
+    "geographic_scope": [
+      "global"
+    ],
+    "classification_confidence": 0.95,
+    "domain": "Medical",
+    "complexity": "structured",
+    "requires_deep_analysis": true
+  },
+  "saved_at": "2026-01-22T06:18:03.043624"
+}

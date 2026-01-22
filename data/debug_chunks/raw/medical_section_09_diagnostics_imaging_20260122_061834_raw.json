@@ -1,0 +1,42 @@
+{
+  "document_id": "medical_section_09_diagnostics_imaging",
+  "document_name": "09_diagnostics_imaging.txt",
+  "text_length": 405,
+  "word_count": 50,
+  "text": "5. Diagnostics and Imaging\n\n5.1 Laboratory Medicine\n\nCommon tests: - Complete blood count (CBC) - Basic metabolic panel\n(BMP) - Liver function tests (LFTs)\n\nInterpretation requires clinical correlation.\n\n5.2 Imaging Modalities\n\n-   X-ray\n-   CT scan\n-   MRI\n-   Ultrasound\n-   PET scan\n\nEach modality has strengths and limitations.\n\n------------------------------------------------------------------------",
+  "metadata": {
+    "document_type": "Diagnostic Report",
+    "department": "Medical",
+    "authority_level": "official",
+    "topics": [
+      "diagnostics",
+      "laboratory_medicine",
+      "medical_imaging",
+      "pathology"
+    ],
+    "intended_audience": [
+      "medical_professionals",
+      "radiologists",
+      "pathologists"
+    ],
+    "effective_date": "2023-10-01",
+    "expiration_date": "2024-10-01",
+    "version": "1.0.0",
+    "document_summary": "This diagnostic report provides detailed findings from laboratory tests and imaging studies, aimed at diagnosing potential medical conditions. It is intended for use by healthcare professionals to guide patient treatment plans.",
+    "key_entities": [
+      "patient_id",
+      "test_results",
+      "imaging_findings"
+    ],
+    "requires_acknowledgment": false,
+    "compliance_related": true,
+    "geographic_scope": [
+      "global"
+    ],
+    "classification_confidence": 0.95,
+    "domain": "Medical",
+    "complexity": "structured",
+    "requires_deep_analysis": true
+  },
+  "saved_at": "2026-01-22T06:18:34.215526"
+}

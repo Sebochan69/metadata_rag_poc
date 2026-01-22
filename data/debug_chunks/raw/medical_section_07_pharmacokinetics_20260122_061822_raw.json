@@ -1,0 +1,41 @@
+{
+  "document_id": "medical_section_07_pharmacokinetics",
+  "document_name": "07_pharmacokinetics.txt",
+  "text_length": 137,
+  "word_count": 19,
+  "text": "4.1 Pharmacokinetics\n\nPharmacokinetics describes how the body handles a drug.\n\nADME: - Absorption - Distribution - Metabolism - Excretion",
+  "metadata": {
+    "document_type": "Pharmacokinetics Report",
+    "department": "Cross-Functional",
+    "authority_level": "official",
+    "topics": [
+      "pharmacokinetics",
+      "pharmacology",
+      "drug_interactions"
+    ],
+    "intended_audience": [
+      "medical_professionals",
+      "pharmacologists",
+      "researchers"
+    ],
+    "effective_date": "2023-01-15",
+    "expiration_date": "2025-01-15",
+    "version": "1.0.0",
+    "document_summary": "This report provides an analysis of the pharmacokinetics of a new drug, detailing its absorption, distribution, metabolism, and excretion. It aims to inform medical professionals and researchers about the drug's behavior in the body and potential interactions.",
+    "key_entities": [
+      "DrugX",
+      "Liver",
+      "Kidney"
+    ],
+    "requires_acknowledgment": false,
+    "compliance_related": true,
+    "geographic_scope": [
+      "global"
+    ],
+    "classification_confidence": 0.95,
+    "domain": "Medical",
+    "complexity": "simple",
+    "requires_deep_analysis": false
+  },
+  "saved_at": "2026-01-22T06:18:22.302794"
+}

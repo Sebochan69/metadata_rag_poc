@@ -1,0 +1,12 @@
+{
+  "document_id": "test_medical_001",
+  "document_name": "test_medical.txt",
+  "text_length": 270,
+  "word_count": 34,
+  "text": "\nMEDICAL TEST DOCUMENT\n\nThis is a test medical document about cardiovascular diseases.\n\nSection 1: Hypertension\nHypertension is high blood pressure affecting the cardiovascular system.\n\nSection 2: Treatment\nTreatment includes ACE inhibitors and lifestyle modifications.\n",
+  "metadata": {
+    "domain": "Medical",
+    "document_type": "Medical Reference"
+  },
+  "saved_at": "2026-01-20T15:56:37.686037"
+}

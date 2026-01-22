@@ -1,0 +1,41 @@
+{
+  "document_id": "medical_section_13_emerging_tech",
+  "document_name": "13_emerging_tech.txt",
+  "text_length": 451,
+  "word_count": 50,
+  "text": "9. Emerging Medical Technologies\n\n9.1 Artificial Intelligence in Medicine\n\nApplications: - Medical imaging analysis - Clinical decision support -\nPredictive analytics\n\nChallenges: - Data bias - Explainability - Regulatory approval\n\n9.2 Genomic Medicine\n\nTechnologies: - Whole genome sequencing - CRISPR gene editing\n\nEthical concerns include privacy and genetic discrimination.\n\n------------------------------------------------------------------------",
+  "metadata": {
+    "document_type": "Research Report",
+    "department": "Cross-Functional",
+    "authority_level": "official",
+    "topics": [
+      "medical_ai",
+      "genomic_medicine",
+      "precision_medicine"
+    ],
+    "intended_audience": [
+      "researchers",
+      "medical_professionals",
+      "executives"
+    ],
+    "effective_date": "2023-09-15",
+    "expiration_date": "2025-09-15",
+    "version": "1.0.0",
+    "document_summary": "This research report explores the integration of artificial intelligence and genomic medicine in modern healthcare, highlighting advancements and potential impacts on precision medicine. It aims to inform medical professionals and researchers about emerging technologies and their applications.",
+    "key_entities": [
+      "AI in medicine",
+      "genomic medicine",
+      "precision medicine"
+    ],
+    "requires_acknowledgment": false,
+    "compliance_related": true,
+    "geographic_scope": [
+      "global"
+    ],
+    "classification_confidence": 0.95,
+    "domain": "Medical",
+    "complexity": "structured",
+    "requires_deep_analysis": true
+  },
+  "saved_at": "2026-01-22T06:19:01.307903"
+}

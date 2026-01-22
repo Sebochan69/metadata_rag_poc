@@ -1,0 +1,31 @@
+# data/raw/medical_definitions/insulin_definition.txt
+"""
+INSULIN - Medical Definition
+
+Insulin is a peptide hormone produced by beta cells in the pancreatic 
+islets of Langerhans. It is the primary hormone responsible for 
+regulating blood glucose levels.
+
+FUNCTION:
+Insulin lowers blood glucose concentration by:
+1. Promoting glucose uptake into muscle and adipose tissue
+2. Stimulating glycogen synthesis in liver and muscle
+3. Inhibiting gluconeogenesis and glycogenolysis
+4. Promoting protein synthesis and lipogenesis
+
+SECRETION:
+Insulin is secreted in response to elevated blood glucose levels, 
+particularly after meals. Secretion is also stimulated by amino acids, 
+fatty acids, and gastrointestinal hormones.
+
+CLINICAL SIGNIFICANCE:
+- Deficiency causes Type 1 diabetes mellitus
+- Resistance causes Type 2 diabetes mellitus
+- Measured clinically to diagnose diabetes and monitor treatment
+
+RELATED CONCEPTS:
+- Glucagon (antagonist hormone)
+- Blood glucose regulation
+- Pancreatic function
+- Diabetes mellitus
+"""

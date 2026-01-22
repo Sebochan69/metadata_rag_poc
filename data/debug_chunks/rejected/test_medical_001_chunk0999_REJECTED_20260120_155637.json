@@ -1,0 +1,15 @@
+{
+  "chunk_id": "0c896eaa-a2cd-4388-bde5-e41d32100771",
+  "document_id": "test_medical_001",
+  "chunk_index": 999,
+  "rejection_reason": "Missing required metadata",
+  "error": "KeyError: 'domain'",
+  "chunk_data": {
+    "text": "This chunk is invalid",
+    "chunk_number": 999,
+    "start_char": 0,
+    "end_char": 21,
+    "metadata": {}
+  },
+  "rejected_at": "2026-01-20T15:56:37.721571"
+}

@@ -1,0 +1,16 @@
+9. Emerging Medical Technologies
+
+9.1 Artificial Intelligence in Medicine
+
+Applications: - Medical imaging analysis - Clinical decision support -
+Predictive analytics
+
+Challenges: - Data bias - Explainability - Regulatory approval
+
+9.2 Genomic Medicine
+
+Technologies: - Whole genome sequencing - CRISPR gene editing
+
+Ethical concerns include privacy and genetic discrimination.
+
+------------------------------------------------------------------------

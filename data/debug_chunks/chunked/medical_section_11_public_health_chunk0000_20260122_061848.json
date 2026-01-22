@@ -1,0 +1,54 @@
+{
+  "chunk_id": "378867f7-15fa-4465-a069-f000cf11e06c",
+  "document_id": "medical_section_11_public_health",
+  "document_name": "11_public_health.txt",
+  "source_type": "txt",
+  "chunk_index": 0,
+  "chunk_strategy": "simple_fixed",
+  "text": "7. Public Health and Epidemiology\n\n7.1 Epidemiological Measures\n\n-   Incidence\n-   Prevalence\n-   Mortality rate\n-   Case fatality rate\n\n7.2 Disease Prevention\n\nLevels: - Primary prevention (vaccination) - Secondary prevention\n(screening) - Tertiary prevention (rehabilitation)\n\n------------------------------------------------------------------------",
+  "text_length": 351,
+  "word_count": 36,
+  "metadata": {
+    "document_type": "Public Health Report",
+    "department": "Cross-Functional",
+    "authority_level": "official",
+    "topics": [
+      "public_health",
+      "epidemiology",
+      "disease_prevention",
+      "vaccination",
+      "infectious_diseases"
+    ],
+    "intended_audience": [
+      "public_health_officials",
+      "medical_researchers",
+      "policy_makers"
+    ],
+    "effective_date": "2023-01-15",
+    "expiration_date": "2024-01-15",
+    "version": "1.0.0",
+    "document_summary": "This report provides an analysis of current epidemiological trends and outlines strategies for disease prevention and vaccination efforts. It is intended for public health officials and policy makers to guide decision-making processes.",
+    "key_entities": [
+      "World Health Organization",
+      "Centers for Disease Control and Prevention"
+    ],
+    "requires_acknowledgment": false,
+    "compliance_related": true,
+    "geographic_scope": [
+      "global"
+    ],
+    "classification_confidence": 0.95,
+    "domain": "Medical",
+    "complexity": "structured",
+    "requires_deep_analysis": true
+  },
+  "chunk_metadata": {},
+  "start_char": 0,
+  "end_char": 351,
+  "chunk_config": {
+    "chunk_size": 500,
+    "overlap": 100
+  },
+  "embedding_status": "pending",
+  "created_at": "2026-01-22T06:18:48.542408"
+}

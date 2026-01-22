@@ -1,0 +1,42 @@
+{
+  "document_id": "medical_section_10_infectious_diseases",
+  "document_name": "10_infectious_diseases.txt",
+  "text_length": 387,
+  "word_count": 41,
+  "text": "6. Infectious Diseases\n\n6.1 Bacterial Infections\n\nExamples: - Tuberculosis (Mycobacterium tuberculosis) - Streptococcal\npharyngitis - Sepsis\n\nAntibiotic resistance is a major global concern.\n\n6.2 Viral Infections\n\nExamples: - Influenza - HIV - COVID-19\n\nVaccination remains the most effective preventive strategy.\n\n------------------------------------------------------------------------",
+  "metadata": {
+    "document_type": "Research Article",
+    "department": "Cross-Functional",
+    "authority_level": "official",
+    "topics": [
+      "infectious_diseases",
+      "bacterial_infections",
+      "viral_infections",
+      "epidemiology",
+      "disease_prevention"
+    ],
+    "intended_audience": [
+      "medical_researchers",
+      "healthcare_professionals",
+      "public_health_officials"
+    ],
+    "effective_date": "2023-10-01",
+    "expiration_date": "2028-10-01",
+    "version": "1.0.0",
+    "document_summary": "This research article explores the mechanisms and epidemiology of infectious diseases, focusing on bacterial and viral infections. It aims to provide insights into disease prevention strategies for healthcare professionals and public health officials.",
+    "key_entities": [
+      "World Health Organization",
+      "Centers for Disease Control and Prevention"
+    ],
+    "requires_acknowledgment": false,
+    "compliance_related": true,
+    "geographic_scope": [
+      "global"
+    ],
+    "classification_confidence": 0.95,
+    "domain": "Medical",
+    "complexity": "structured",
+    "requires_deep_analysis": true
+  },
+  "saved_at": "2026-01-22T06:18:44.212218"
+}

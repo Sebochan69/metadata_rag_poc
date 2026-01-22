@@ -1,0 +1,15 @@
+7. Public Health and Epidemiology
+
+7.1 Epidemiological Measures
+
+-   Incidence
+-   Prevalence
+-   Mortality rate
+-   Case fatality rate
+
+7.2 Disease Prevention
+
+Levels: - Primary prevention (vaccination) - Secondary prevention
+(screening) - Tertiary prevention (rehabilitation)
+
+------------------------------------------------------------------------

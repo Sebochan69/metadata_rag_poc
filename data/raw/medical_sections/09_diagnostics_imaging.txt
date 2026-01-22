@@ -1,0 +1,20 @@
+5. Diagnostics and Imaging
+
+5.1 Laboratory Medicine
+
+Common tests: - Complete blood count (CBC) - Basic metabolic panel
+(BMP) - Liver function tests (LFTs)
+
+Interpretation requires clinical correlation.
+
+5.2 Imaging Modalities
+
+-   X-ray
+-   CT scan
+-   MRI
+-   Ultrasound
+-   PET scan
+
+Each modality has strengths and limitations.
+
+------------------------------------------------------------------------

@@ -1,0 +1,11 @@
+4.2 Pharmacodynamics
+
+Pharmacodynamics focuses on drug effects on the body.
+
+Concepts: - Receptor binding - Agonists vs antagonists - Dose-response
+relationships
+
+Drug classes: - Antibiotics (beta-lactams, macrolides) -
+Antihypertensives (ACE inhibitors, ARBs) - Analgesics (NSAIDs, opioids)
+
+------------------------------------------------------------------------

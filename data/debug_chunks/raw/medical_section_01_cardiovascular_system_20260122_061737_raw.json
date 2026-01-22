@@ -1,0 +1,40 @@
+{
+  "document_id": "medical_section_01_cardiovascular_system",
+  "document_name": "01_cardiovascular_system.txt",
+  "text_length": 535,
+  "word_count": 72,
+  "text": "1.1 Cardiovascular System\n\nThe cardiovascular system consists of the heart, blood, and blood\nvessels. Its primary function is to transport oxygen, nutrients,\nhormones, and waste products throughout the body.\n\nKey components: - Heart (atria, ventricles, valves) - Arteries (elastic,\nmuscular) - Veins - Capillaries\n\nClinical relevance: - Hypertension results from increased systemic\nvascular resistance. - Atherosclerosis involves lipid deposition within\narterial walls. - Myocardial infarction occurs due to ischemia of\ncardiac muscle.",
+  "metadata": {
+    "document_type": "Educational Material",
+    "department": "Cross-Functional",
+    "authority_level": "reference",
+    "topics": [
+      "cardiovascular_system",
+      "anatomy",
+      "physiology"
+    ],
+    "intended_audience": [
+      "medical_students",
+      "healthcare_professionals"
+    ],
+    "effective_date": "2023-01-15",
+    "expiration_date": "2025-01-15",
+    "version": "1.0.0",
+    "document_summary": "This document provides an in-depth overview of the cardiovascular system, including its components and clinical relevance. It is designed for educational purposes to enhance understanding among medical students and healthcare professionals.",
+    "key_entities": [
+      "heart",
+      "blood vessels",
+      "circulatory system"
+    ],
+    "requires_acknowledgment": false,
+    "compliance_related": false,
+    "geographic_scope": [
+      "global"
+    ],
+    "classification_confidence": 0.95,
+    "domain": "Medical",
+    "complexity": "structured",
+    "requires_deep_analysis": true
+  },
+  "saved_at": "2026-01-22T06:17:37.994042"
+}

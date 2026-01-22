@@ -1,0 +1,54 @@
+{
+  "chunk_id": "3ce18b62-01ec-4c92-9a9d-b5d272486f2d",
+  "document_id": "medical_section_06_neoplasia",
+  "document_name": "06_neoplasia.txt",
+  "source_type": "txt",
+  "chunk_index": 0,
+  "chunk_strategy": "simple_fixed",
+  "text": "3.2 Neoplasia\n\nNeoplasia refers to abnormal tissue growth.\n\nBenign vs malignant: - Benign tumors are localized - Malignant tumors\ninvade and metastasize\n\nHallmarks of cancer: - Sustained proliferative signaling - Evasion of\napoptosis - Angiogenesis - Immune evasion\n\n------------------------------------------------------------------------",
+  "text_length": 339,
+  "word_count": 39,
+  "metadata": {
+    "document_type": "Medical Research",
+    "department": "Cross-Functional",
+    "authority_level": "official",
+    "topics": [
+      "neoplasia",
+      "cancer",
+      "disease_mechanisms",
+      "pathology"
+    ],
+    "intended_audience": [
+      "medical_researchers",
+      "oncologists",
+      "healthcare_professionals"
+    ],
+    "effective_date": "2023-10-01",
+    "expiration_date": "2028-10-01",
+    "version": "1.0.0",
+    "document_summary": "This document provides an in-depth analysis of neoplasia and tumor characteristics, exploring the hallmarks of cancer and their implications for disease mechanisms. It is intended for medical researchers and healthcare professionals specializing in oncology.",
+    "key_entities": [
+      "neoplasia",
+      "tumor",
+      "cancer"
+    ],
+    "requires_acknowledgment": false,
+    "compliance_related": true,
+    "geographic_scope": [
+      "global"
+    ],
+    "classification_confidence": 0.95,
+    "domain": "Medical",
+    "complexity": "structured",
+    "requires_deep_analysis": true
+  },
+  "chunk_metadata": {},
+  "start_char": 0,
+  "end_char": 339,
+  "chunk_config": {
+    "chunk_size": 500,
+    "overlap": 100
+  },
+  "embedding_status": "pending",
+  "created_at": "2026-01-22T06:18:16.666634"
+}

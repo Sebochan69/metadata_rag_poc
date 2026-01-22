@@ -218,6 +218,7 @@ class QdrantManager:
         
         return payload
     
+   
     def search(
         self,
         query: str,
@@ -225,7 +226,7 @@ class QdrantManager:
         where: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """
-        Search for similar chunks using vector similarity.
+        Search for similar chunks using HYBRID search (vector + BM25).
         
         Args:
             query: Search query text
@@ -240,7 +241,7 @@ class QdrantManager:
                 - distances: List of similarity distances
         """
         logger.info(
-            "search_started",
+            "hybrid_search_started",
             query_length=len(query),
             n_results=n_results,
             filters=where is not None,
@@ -252,14 +253,46 @@ class QdrantManager:
         # Build Qdrant filter
         qdrant_filter = self._build_qdrant_filter(where) if where else None
         
-        # Search - use the correct method name
+        # ⭐ HYBRID SEARCH - Combine vector + keyword (BM25)
         try:
+            # Use query_points for hybrid search
+            from qdrant_client.models import QueryRequest, SparseVector
+            
+            # Method 1: Simple approach - over-retrieve then keyword filter
             results = self.client.query_points(
                 collection_name=self.collection_name,
                 query=query_embedding,
-                limit=n_results,
+                limit=n_results * 3,  # Over-retrieve for keyword filtering
                 query_filter=qdrant_filter,
             )
+            
+            # Keyword filtering (simple BM25 approximation)
+            query_terms = set(query.lower().split())
+            
+            scored_results = []
+            for result in results.points:
+                text = result.payload.get("text", "").lower()
+                
+                # Count keyword matches
+                keyword_matches = sum(1 for term in query_terms if term in text)
+                keyword_score = keyword_matches / len(query_terms) if query_terms else 0
+                
+                # Combine scores: 50% vector, 50% keyword
+                vector_score = result.score
+                hybrid_score = 0.5 * vector_score + 0.5 * keyword_score
+                
+                scored_results.append({
+                    "result": result,
+                    "hybrid_score": hybrid_score,
+                    "vector_score": vector_score,
+                    "keyword_score": keyword_score,
+                })
+            
+            # Re-rank by hybrid score
+            scored_results.sort(key=lambda x: x["hybrid_score"], reverse=True)
+            
+            # Take top N
+            top_results = scored_results[:n_results]
             
             # Format results (similar to ChromaDB format for compatibility)
             ids = []
@@ -267,7 +300,9 @@ class QdrantManager:
             metadatas = []
             distances = []
             
-            for result in results.points:
+            for item in top_results:
+                result = item["result"]
+                
                 ids.append(str(result.id))
                 documents.append(result.payload.get("text", ""))
                 
@@ -275,13 +310,14 @@ class QdrantManager:
                 metadata = {k: v for k, v in result.payload.items() if k != "text"}
                 metadatas.append(metadata)
                 
-                # Qdrant returns score (higher is better)
-                # Convert to distance (lower is better) for compatibility
-                distances.append(1.0 - result.score)
+                # Convert score back to distance (lower is better for compatibility)
+                distances.append(1.0 - item["hybrid_score"])
             
             logger.info(
-                "search_completed",
+                "hybrid_search_completed",
                 results_found=len(ids),
+                avg_vector_score=sum(r["vector_score"] for r in top_results) / len(top_results) if top_results else 0,
+                avg_keyword_score=sum(r["keyword_score"] for r in top_results) / len(top_results) if top_results else 0,
             )
             
             return {
@@ -293,7 +329,7 @@ class QdrantManager:
             
         except Exception as e:
             logger.error(
-                "search_failed",
+                "hybrid_search_failed",
                 error=str(e),
             )
             raise

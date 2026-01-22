@@ -1,0 +1,39 @@
+{
+  "document_id": "medical_section_02_nervous_system",
+  "document_name": "02_nervous_system.txt",
+  "text_length": 519,
+  "word_count": 60,
+  "text": "1.2 Nervous System\n\nThe nervous system is divided into: - Central Nervous System (CNS):\nbrain and spinal cord - Peripheral Nervous System (PNS): cranial and\nspinal nerves\n\nSubdivisions: - Somatic nervous system - Autonomic nervous system\n(sympathetic and parasympathetic)\n\nDiseases: - Parkinson’s disease: dopaminergic neuron degeneration -\nAlzheimer’s disease: amyloid-beta plaques and tau tangles - Multiple\nsclerosis: autoimmune demyelination\n\n------------------------------------------------------------------------",
+  "metadata": {
+    "document_type": "Educational Material",
+    "department": "Cross-Functional",
+    "authority_level": "reference",
+    "topics": [
+      "nervous_system",
+      "disease_mechanisms",
+      "pathology"
+    ],
+    "intended_audience": [
+      "medical_students",
+      "healthcare_professionals"
+    ],
+    "effective_date": "2023-01-15",
+    "expiration_date": "2025-01-15",
+    "version": "1.0.0",
+    "document_summary": "This educational material provides an in-depth analysis of the nervous system, exploring its structure, function, and associated diseases. It is designed for medical students and healthcare professionals to enhance their understanding of neurological conditions.",
+    "key_entities": [
+      "nervous system",
+      "neurological diseases"
+    ],
+    "requires_acknowledgment": false,
+    "compliance_related": false,
+    "geographic_scope": [
+      "global"
+    ],
+    "classification_confidence": 0.95,
+    "domain": "Medical",
+    "complexity": "structured",
+    "requires_deep_analysis": true
+  },
+  "saved_at": "2026-01-22T06:17:45.630191"
+}

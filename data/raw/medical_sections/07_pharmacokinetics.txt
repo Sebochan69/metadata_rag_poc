@@ -1,0 +1,5 @@
+4.1 Pharmacokinetics
+
+Pharmacokinetics describes how the body handles a drug.
+
+ADME: - Absorption - Distribution - Metabolism - Excretion

@@ -1,12 +1,15 @@
 """
 LangGraph node functions for the metadata extraction pipeline.
 Each function represents a step in the extraction workflow.
+
+⭐ INCLUDES: Chunk debugger integration for all chunks
 """
 
 import time
 from typing import Any
 
 from src.ingestion.chunker import chunk_document
+from src.ingestion.chunk_debugger import get_chunk_debugger  # ⭐ NEW
 from src.metadata.classifier import get_classifier
 from src.metadata.doc_extractor import get_doc_extractor
 from src.metadata.validator import MetadataValidationError, get_validator
@@ -38,7 +41,7 @@ def classify_document_node(state: GraphState) -> GraphState:
             # Classify document
             classification = classifier.classify(
                 document_text=state["raw_text"],
-                preview_length=2000,  # TODO: Get from config
+                preview_length=2000,
             )
             
             # Update state
@@ -106,7 +109,7 @@ def extract_doc_metadata_node(state: GraphState) -> GraphState:
                 classification=classification,
             )
             
-            # NEW: Eager validation
+            # Eager validation
             from src.metadata.validator import get_validator
             
             validator = get_validator()
@@ -163,8 +166,9 @@ def extract_doc_metadata_node(state: GraphState) -> GraphState:
                 stage="doc_metadata_extraction",
             )
 
+
 # ============================================================================
-# Node: Chunk Document
+# Node: Chunk Document (⭐ WITH DEBUG OUTPUT)
 # ============================================================================
 
 def chunk_document_node(state: GraphState) -> GraphState:
@@ -173,17 +177,70 @@ def chunk_document_node(state: GraphState) -> GraphState:
     
     Updates state with:
     - chunks: List of document chunks with metadata
+    
+    ⭐ NEW: Saves all chunks to JSON for debugging BEFORE embedding
     """
     with LogContext(document_id=state["document_id"]):
         logger.info("node_chunk_document_started")
         
         try:
-            # Chunk the document
+            # Get chunk debugger
+            debugger = get_chunk_debugger()
+            
+            # Save raw document first (before chunking)
+            debugger.save_raw_document(
+                document_id=state["document_id"],
+                document_text=state["raw_text"],
+                document_name=state.get("filename", "unknown"),
+                metadata=state.get("doc_metadata", {})
+            )
+            
+            # Chunk the document (fixed strategy: 500 tokens, 100 overlap)
             chunks = chunk_document(
                 text=state["raw_text"],
-                chunk_size=500,  # TODO: Get from settings
-                chunk_overlap=50,
+                chunk_size=500,  # Fixed size
+                chunk_overlap=100,  # Fixed overlap
                 document_metadata=state["doc_metadata"],
+            )
+            
+            # ⭐ SAVE EACH CHUNK TO JSON (BEFORE EMBEDDING)
+            logger.info(
+                "saving_chunks_to_debug_output",
+                chunk_count=len(chunks)
+            )
+            
+            for chunk in chunks:
+                try:
+                    chunk_id = debugger.save_chunk(
+                        chunk=chunk,
+                        document_id=state["document_id"],
+                        document_name=state.get("filename", "unknown"),
+                        source_type="txt",  # Detect from filename if needed
+                        chunk_strategy="simple_fixed",
+                        chunk_config={
+                            "chunk_size": 500,
+                            "overlap": 100,
+                        },
+                        embedding_status="pending",
+                    )
+                    
+                    # Store chunk_id in chunk metadata for reference
+                    chunk["metadata"]["debug_chunk_id"] = chunk_id
+                    
+                except Exception as e:
+                    logger.error(
+                        "failed_to_save_chunk_debug",
+                        chunk_number=chunk.get("chunk_number"),
+                        error=str(e)
+                    )
+                    # Don't fail pipeline if debug save fails
+            
+            # Get debug stats
+            stats = debugger.get_stats()
+            logger.info(
+                "chunk_debug_output_complete",
+                total_chunked_files=stats["chunked_files"],
+                base_path=stats["base_path"]
             )
             
             state["chunks"] = chunks

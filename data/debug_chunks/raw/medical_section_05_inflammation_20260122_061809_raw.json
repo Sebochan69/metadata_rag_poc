@@ -1,0 +1,41 @@
+{
+  "document_id": "medical_section_05_inflammation",
+  "document_name": "05_inflammation.txt",
+  "text_length": 235,
+  "word_count": 37,
+  "text": "3.1 Inflammation\n\nInflammation is the body’s response to injury or infection.\n\nCardinal signs: - Rubor - Calor - Tumor - Dolor - Functio laesa\n\nChronic inflammation is linked to: - Cancer - Cardiovascular disease -\nAutoimmune disorders",
+  "metadata": {
+    "document_type": "Research Article",
+    "department": "Medical",
+    "authority_level": "official",
+    "topics": [
+      "inflammation",
+      "pathology",
+      "disease_mechanisms"
+    ],
+    "intended_audience": [
+      "medical_researchers",
+      "clinicians",
+      "medical_students"
+    ],
+    "effective_date": "2023-09-15",
+    "expiration_date": "2028-09-15",
+    "version": "1.0.0",
+    "document_summary": "This research article explores the mechanisms of inflammation, detailing symptoms and related conditions. It aims to provide insights for medical researchers and clinicians in understanding and managing inflammatory diseases.",
+    "key_entities": [
+      "inflammation",
+      "symptoms",
+      "related_conditions"
+    ],
+    "requires_acknowledgment": false,
+    "compliance_related": false,
+    "geographic_scope": [
+      "global"
+    ],
+    "classification_confidence": 0.95,
+    "domain": "Medical",
+    "complexity": "structured",
+    "requires_deep_analysis": true
+  },
+  "saved_at": "2026-01-22T06:18:09.700168"
+}

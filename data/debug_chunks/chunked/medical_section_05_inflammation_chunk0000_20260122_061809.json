@@ -1,0 +1,53 @@
+{
+  "chunk_id": "af64f5e8-161b-4760-948d-1a701fad748a",
+  "document_id": "medical_section_05_inflammation",
+  "document_name": "05_inflammation.txt",
+  "source_type": "txt",
+  "chunk_index": 0,
+  "chunk_strategy": "simple_fixed",
+  "text": "3.1 Inflammation\n\nInflammation is the body’s response to injury or infection.\n\nCardinal signs: - Rubor - Calor - Tumor - Dolor - Functio laesa\n\nChronic inflammation is linked to: - Cancer - Cardiovascular disease -\nAutoimmune disorders",
+  "text_length": 235,
+  "word_count": 37,
+  "metadata": {
+    "document_type": "Research Article",
+    "department": "Medical",
+    "authority_level": "official",
+    "topics": [
+      "inflammation",
+      "pathology",
+      "disease_mechanisms"
+    ],
+    "intended_audience": [
+      "medical_researchers",
+      "clinicians",
+      "medical_students"
+    ],
+    "effective_date": "2023-09-15",
+    "expiration_date": "2028-09-15",
+    "version": "1.0.0",
+    "document_summary": "This research article explores the mechanisms of inflammation, detailing symptoms and related conditions. It aims to provide insights for medical researchers and clinicians in understanding and managing inflammatory diseases.",
+    "key_entities": [
+      "inflammation",
+      "symptoms",
+      "related_conditions"
+    ],
+    "requires_acknowledgment": false,
+    "compliance_related": false,
+    "geographic_scope": [
+      "global"
+    ],
+    "classification_confidence": 0.95,
+    "domain": "Medical",
+    "complexity": "structured",
+    "requires_deep_analysis": true
+  },
+  "chunk_metadata": {},
+  "start_char": 0,
+  "end_char": 235,
+  "chunk_config": {
+    "chunk_size": 500,
+    "overlap": 100
+  },
+  "embedding_status": "pending",
+  "created_at": "2026-01-22T06:18:09.718115"
+}

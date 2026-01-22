@@ -1,0 +1,41 @@
+{
+  "document_id": "medical_section_08_pharmacodynamics",
+  "document_name": "08_pharmacodynamics.txt",
+  "text_length": 365,
+  "word_count": 37,
+  "text": "4.2 Pharmacodynamics\n\nPharmacodynamics focuses on drug effects on the body.\n\nConcepts: - Receptor binding - Agonists vs antagonists - Dose-response\nrelationships\n\nDrug classes: - Antibiotics (beta-lactams, macrolides) -\nAntihypertensives (ACE inhibitors, ARBs) - Analgesics (NSAIDs, opioids)\n\n------------------------------------------------------------------------",
+  "metadata": {
+    "document_type": "Pharmacology Report",
+    "department": "Cross-Functional",
+    "authority_level": "official",
+    "topics": [
+      "pharmacology",
+      "pharmacodynamics",
+      "drug_interactions"
+    ],
+    "intended_audience": [
+      "medical_professionals",
+      "pharmacologists",
+      "researchers"
+    ],
+    "effective_date": "2023-10-01",
+    "expiration_date": "2025-10-01",
+    "version": "1.0.0",
+    "document_summary": "This report provides an in-depth analysis of pharmacodynamics and drug interactions, focusing on the effects of various drug classes. It is intended for medical professionals and researchers to enhance understanding of drug mechanisms.",
+    "key_entities": [
+      "drug_class_A",
+      "drug_class_B",
+      "pharmacodynamics_study"
+    ],
+    "requires_acknowledgment": false,
+    "compliance_related": true,
+    "geographic_scope": [
+      "global"
+    ],
+    "classification_confidence": 0.95,
+    "domain": "Medical",
+    "complexity": "structured",
+    "requires_deep_analysis": true
+  },
+  "saved_at": "2026-01-22T06:18:27.592673"
+}
